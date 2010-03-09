@@ -1,0 +1,17 @@
+ :title:DTAUS-Datei erstellen
+
+ =DTAUS-Datei für Sammellastschrift erstellen
+
+ Quick How-To:
+  auftraggeber = DTAUS::Konto.new(0123456789, 01234567, 'Muster GmbH', 'Deutsche Bank', true)
+  kunde = DTAUS::Konto.new(0123456789, 01234567, 'Max Meier-Schulze', 'Sparkasse')
+  buchung = DTAUS::Buchung.new(auftraggeber, kunde, 39.99, 'Vielen Dank für ihren Einkauf vom 01.01.2010. Rechnungsnummer 12345')
+  dta = DTAUS.new(auftraggeber)
+  dta.add(buchung)
+  dta.to_file
+
+ Typ der Datei ist 'LK' (Lastschrift Kunde)
+
+ Infos zu DTAUS: http://www.infodrom.org/projects/dtaus/dtaus.php3
+ DTAUS online check: http://www.xpecto.de/index.php?id=148,7
+
