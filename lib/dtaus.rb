@@ -7,8 +7,8 @@ require 'dtaus/konto'
 # =DTAUS-Datei für Sammellastschrift erstellen
 #
 # Quick How-To:
-#  auftraggeber = DTAUS::Konto.new(0123456789, 01234567, 'Muster GmbH', 'Deutsche Bank', true)
-#  kunde = DTAUS::Konto.new(0123456789, 01234567, 'Max Meier-Schulze', 'Sparkasse')
+#  auftraggeber = DTAUS::Konto.new(1234567890, 12345670, 'Muster GmbH', 'Deutsche Bank', true)
+#  kunde = DTAUS::Konto.new(1234567890, 12345670, 'Max Meier-Schulze', 'Sparkasse')
 #  buchung = DTAUS::Buchung.new(auftraggeber, kunde, 39.99, 'Vielen Dank für ihren Einkauf vom 01.01.2010. Rechnungsnummer 12345')
 #  dta = DTAUS.new(auftraggeber)
 #  dta.add(buchung)
@@ -72,7 +72,7 @@ class DTAUS
 		raise IncorrectSize.new("Datensatzlänge ist nicht durch 128 teilbar: #{temp.size}") if temp.size % 128 != 0
 		temp
   end
-  alias :to_dta :to_s
+  alias :to_s :to_dta
 
 	# Schreibt die DTAUS-Datei
 	# Standarddateiname ist DTAUS0.TXT

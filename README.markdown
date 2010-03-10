@@ -5,7 +5,12 @@ This is a library specific to the german banking sector. Therefore the documenta
 
 Beim Datenträgeraustausch (DTA) werden Zahlungsverkehrsdaten - also Überweisungen und Lastschriften - als Datei an ein Geldinstitut übergeben. Dieser Gem stellt Klassen bereit solche Dateien zu erzeugen.
 
-How-To:
+Download
+-------------
+
+Install via RubyGems: `gem install dtaus`
+
+Usage
 -------------
 
 Ablauf:
@@ -19,11 +24,11 @@ Ablauf:
 
 In Ruby:
  
-    auftraggeber = DTAUS::Konto.new(0123456789, 01234567, 'Muster GmbH', 'Deutsche Bank', true)
+    auftraggeber = DTAUS::Konto.new(1234567890, 12345670, 'Muster GmbH', 'Deutsche Bank', true)
 
     dta = DTAUS.new(auftraggeber)
 
-    kunde = DTAUS::Konto.new(0123456789, 01234567, 'Max Meier-Schulze', 'Sparkasse')
+    kunde = DTAUS::Konto.new(1234567890, 12345670, 'Max Meier-Schulze', 'Sparkasse')
     buchung = DTAUS::Buchung.new(auftraggeber, kunde, 39.99, 'Vielen Dank für ihren Einkauf vom 01.01.2010. Rechnungsnummer 12345')
 
     dta.add(buchung)
