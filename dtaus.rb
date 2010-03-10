@@ -72,6 +72,7 @@ class DTAUS
 		raise IncorrectSize.new("Datensatzlänge ist nicht durch 128 teilbar: #{temp.size}") if temp.size % 128 != 0
 		temp
   end
+  alias :to_dta :to_s
 
 	# Schreibt die DTAUS-Datei
 	# Standarddateiname ist DTAUS0.TXT
