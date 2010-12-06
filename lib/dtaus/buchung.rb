@@ -35,6 +35,7 @@ class DTAUS
 
 
     # 5 Zeichen	 Art der Transaktion (7a: 2 Zeichen, 7b: 3 Zeichen)
+      @betrag = (_betrag * 100).round.to_i  # Euro-Cent
     # "04000" Lastschrift des Abbuchungsauftragsverfahren
     # "05000" Lastschrift des Einzugsermächtigungsverfahren
     # "05005" Lastschrift aus Verfügung im elektronischen Cash-System
