@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 require 'enumerator'
 require 'dtaus/erweiterung'
 
@@ -32,7 +34,6 @@ class DTAUS
         @positiv  = false
       end
     end
-
 
     # 5 Zeichen  Art der Transaktion (7a: 2 Zeichen, 7b: 3 Zeichen)
     # "04000" Lastschrift des Abbuchungsauftragsverfahren
@@ -113,4 +114,3 @@ class DTAUS
 
   end
 end
-

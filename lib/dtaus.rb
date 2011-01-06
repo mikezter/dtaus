@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 require 'dtaus/buchung'
 require 'dtaus/konto'
 
@@ -207,4 +209,3 @@ private
   end
 
 end
-

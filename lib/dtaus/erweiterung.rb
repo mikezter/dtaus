@@ -1,4 +1,7 @@
+# encoding: utf-8
+
 class DTAUS
+
   # Eine Erweiterung eines C-Segments
   # Stellt eine Länge von 27 Zeichen sicher
   #
@@ -47,4 +50,3 @@ class DTAUS
   end
 
 end
-
