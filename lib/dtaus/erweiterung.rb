@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-class DTAUS
+module Dtaus
 
   # Eine Erweiterung eines C-Segments
   # Stellt eine Länge von 27 Zeichen sicher
@@ -16,19 +16,15 @@ class DTAUS
       :auftraggeber => TYPE_AUFTRAGGEBER
     }
 
-    class IncorrectErweiterungType; end;
     attr_reader :type, :text
 
     # Erstellt ein Array von Erweiterungen aus einem beliebig langem String
     #
     def self.from_string(_typ, _text)
       erweiterungen = []
-      _text = DTAUS.convert_text(_text)
-      if _text.size > 27
-        index = 27
-        while index < _text.size
-          erweiterungen << Erweiterung.new(_typ, _text[index..index += 26])
-        end
+      _text = Converter.convert_text(_text)
+      while _text.size > 0
+        erweiterungen << Erweiterung.new(_typ, _text.slice!(0..26))
       end
       erweiterungen
     end
@@ -37,9 +33,9 @@ class DTAUS
     # _type muss ein Symbol aus :kunde, :verwendungszweck, :auftraggeber sein.
     #
     def initialize(_type, _text)
-      raise IncorrectErweiterungType.new unless TYPES.keys.include?(_type) or TYPES.values.include?(_type)
-      @text = DTAUS.convert_text(_text).ljust(27)
-      raise IncorrectSize.new("Text size may not exceed 27 Chars") if text.size > 27
+      raise IncorrectErweiterungTypeException.new unless TYPES.keys.include?(_type) or TYPES.values.include?(_type)
+      @text = Converter.convert_text(_text).ljust(27)
+      raise IncorrectSizeException.new("Text size may not exceed 27 Chars") if text.size > 27
       @type = TYPES[_type] || _type
     end
 

@@ -1,9 +1,6 @@
 # encoding: utf-8
 
-require 'enumerator'
-require 'dtaus/erweiterung'
-
-class DTAUS
+module Dtaus
 
   # Buchung erstellen
   #  buchung = Buchung.new(auftraggeber_konto, kunden_konto, betrag, verwendungszweck)
@@ -16,15 +13,15 @@ class DTAUS
     alias :positiv? :positiv
 
     def initialize(_auftraggeber, _konto, _betrag, _text = "")
-      raise DTAusException.new("Konto expected, got #{_konto.class}") unless _konto.is_a?(Konto)
-      raise DTAUSException.new("Betrag is a #{_betrag.class}, expected Float") unless _betrag.is_a?(Float)
-      raise DTAUSException.new("Betrag ist 0.0") unless _betrag > 0
+      raise DtausException.new("Konto expected, got #{_konto.class}") unless _konto.is_a?(Konto)
+      raise DtausException.new("Betrag is a #{_betrag.class}, expected Float") unless _betrag.is_a?(Float)
+      raise DtausException.new("Betrag ist 0.0") unless _betrag > 0
 
       @auftraggeber = _auftraggeber
       @konto        = _konto
-      @text         = DTAUS.convert_text(_text)
+      @text         = Converter.convert_text(_text)
 
-      raise IncorrectSize.new("Zuviele Erweiterungen: #{erweiterungen.size}, maximal 15. Verwendungszweck zu lang?") if erweiterungen.size > 15
+      raise IncorrectSizeException.new("Zuviele Erweiterungen: #{erweiterungen.size}, maximal 15. Verwendungszweck zu lang?") if erweiterungen.size > 15
 
       @betrag = (_betrag * 100).round.to_i  # Euro-Cent
       if betrag > 0
@@ -85,7 +82,7 @@ class DTAUS
           dta += slice.inject('') {|dta, erweiterung| dta += erweiterung.to_dta}.ljust(128)
         end
       end
-      raise IncorrectSize.new("Erweiterungen: #{dta.size} Zeichen") if dta.size > 256 * 3 or dta.size % 128 != 0
+      raise IncorrectSizeException.new("Erweiterungen: #{dta.size} Zeichen") if dta.size > 256 * 3 or dta.size % 128 != 0
       return dta
 
     end
@@ -108,7 +105,7 @@ class DTAUS
       dta += ' ' * 3                               #  3 Zeichen  Reserviert, 3 Blanks
       dta += konto.name[0..26].ljust(27)           # 27 Zeichen  Name des Kunden
       dta +=  ' ' * 8                              #  8 Zeichen  Reserviert, 8 Blanks
-      raise IncorrectSize.new("C-Segement 1: #{dta.size} Zeichen, 128 erwartet (#{konto.name})") if dta.size != 128
+      raise IncorrectSizeException.new("C-Segement 1: #{dta.size} Zeichen, 128 erwartet (#{konto.name})") if dta.size != 128
       return dta
     end
 

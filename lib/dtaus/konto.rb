@@ -1,8 +1,6 @@
 # encoding: utf-8
 
-require 'dtaus/erweiterung'
-
-class DTAUS
+module Dtaus
 
   # Kontodaten verwalten mit Name des Inhabers und Bank, Bankleitzahl und Kontonummer.
   #
@@ -20,14 +18,14 @@ class DTAUS
     def initialize(_nummer, _blz, _name, _bank, _auftraggeber = false, _kunnr = 0)
       @auftraggeber = _auftraggeber
 
-      @nummer = DTAUS.convert_number(_nummer)
-      @blz    = DTAUS.convert_number(_blz)
-      @kunnr = DTAUS.convert_number(_kunnr)
-      @name  = DTAUS.convert_text(_name)
-      @bank  = DTAUS.convert_text(_bank)
+      @nummer = Converter.convert_number(_nummer)
+      @blz    = Converter.convert_number(_blz)
+      @kunnr = Converter.convert_number(_kunnr)
+      @name  = Converter.convert_text(_name)
+      @bank  = Converter.convert_text(_bank)
 
-      raise DTAUSException.new("Ungültige Kontonummer: #{nummer}") if nummer == 0 or nummer.to_s.size > 10
-      raise DTAUSException.new("Ungültige Bankleitzahl: #{blz}")   if blz  == 0 or blz.to_s.size > 8
+      raise DtausException.new("Ungültige Kontonummer: #{nummer}") if nummer == 0 or nummer.to_s.size > 10
+      raise DtausException.new("Ungültige Bankleitzahl: #{blz}")   if blz  == 0 or blz.to_s.size > 8
     end
 
     def erweiterungen
