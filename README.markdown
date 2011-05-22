@@ -20,7 +20,7 @@ Ablauf:
 * Erstelle ein oder mehrerere Kunden-Konten mit dazugehörigen Buchungen
 * Füge die Buchungen dem DTAUS Objekt hinzu
 * Schreibe eine DTAUS Datei
-* _Alternativ:_ Gebe die Daten als String aus
+* _Alternativ:_ Gib die Daten als String aus
 
 In Ruby:
  
@@ -48,7 +48,6 @@ Todo:
 ------
 
 * Gutschriften ermöglichen
-* Refactor to Module instead of Class with Subclasses
 * Parameter als Hash annehmen (vor allem für `Konto` und `Buchung`)
 * weiteres?
 
