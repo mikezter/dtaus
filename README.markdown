@@ -24,12 +24,12 @@ Ablauf:
 
 In Ruby:
  
-    auftraggeber = DTAUS::Konto.new(1234567890, 12345670, 'Muster GmbH', 'Deutsche Bank', true)
+    auftraggeber = Dtaus::Konto.new(1234567890, 12345670, 'Muster GmbH', 'Deutsche Bank', true)
 
-    dta = DTAUS.new(auftraggeber)
+    dta = Dtaus::DtaGenerator.new(auftraggeber)
 
-    kunde = DTAUS::Konto.new(1234567890, 12345670, 'Max Meier-Schulze', 'Sparkasse')
-    buchung = DTAUS::Buchung.new(auftraggeber, kunde, 39.99, 'Vielen Dank für ihren Einkauf vom 01.01.2010. Rechnungsnummer 12345')
+    kunde = Dtaus::Konto.new(1234567890, 12345670, 'Max Meier-Schulze', 'Sparkasse')
+    buchung = Dtaus::Buchung.new(auftraggeber, kunde, 39.99, 'Vielen Dank für ihren Einkauf vom 01.01.2010. Rechnungsnummer 12345')
 
     dta.add(buchung)
 
@@ -37,6 +37,7 @@ In Ruby:
 
     puts dta
 
+Siehe: example/example.rb
  
 Einschränkungen:
 ----------------
