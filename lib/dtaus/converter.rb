@@ -1,4 +1,6 @@
 module Dtaus
+  
+  # Utility class for converting strings and numbers to DTA-conform representations
   class Converter
     
     # Zeichen umsetzen gemäss DTA-Norm
