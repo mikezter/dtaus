@@ -1,6 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + "/test_helper")
 
-class ErweiterungTest < Test::Unit::TestCase
+class KontoTest < Test::Unit::TestCase
 
   def test_initialize
     konto = Dtaus::Konto.new(1234567890, 12345678, 'Inhaber', 'Bank Name')

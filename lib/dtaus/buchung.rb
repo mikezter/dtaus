@@ -2,26 +2,33 @@
 
 module Dtaus
 
-  # Buchung erstellen
-  #  buchung = Buchung.new(auftraggeber_konto, kunden_konto, betrag, verwendungszweck)
-  #
-  # auftraggeber_konto und kunden_konto müssen ein DTAUS::Konto sein
-  # betrag muss ein Float sein
-  #
+  # Buchungsdaten mit zwei Konten (Auftraggeber und Kunde),
+  # Betrag und erwendungszweck
   class Buchung
     attr_reader :betrag, :konto, :text, :positiv, :auftraggeber
     alias :positiv? :positiv
 
+    # Buchung erstellen
+    #
+    # Parameter:
+    # * _auftraggeber, Dtaus::Konto des Auftraggebers
+    # * _konto, Dtaus::Konto des Kunden
+    # * _betrag, der Betrag der Buchung in +Float+
+    # * _text, der Verwendungszweck der Buchung,
+    #          optional, default-Wert ist +""+
     def initialize(_auftraggeber, _konto, _betrag, _text = "")
-      raise DtausException.new("Konto expected, got #{_konto.class}") unless _konto.is_a?(Konto)
+      raise DtausException.new("Konto expected for Parameter 'konto', got #{_konto.class}") unless _konto.is_a?(Konto)
+      raise DtausException.new("Konto expected for Parameter 'auftraggeber', got #{_auftraggeber.class}") unless _auftraggeber.is_a?(Konto)
       raise DtausException.new("Betrag is a #{_betrag.class}, expected Float") unless _betrag.is_a?(Float)
-      raise DtausException.new("Betrag ist 0.0") unless _betrag > 0
+      raise DtausException.new("Betrag ist 0.0") if _betrag == 0
 
       @auftraggeber = _auftraggeber
       @konto        = _konto
       @text         = Converter.convert_text(_text)
 
-      raise IncorrectSizeException.new("Zuviele Erweiterungen: #{erweiterungen.size}, maximal 15. Verwendungszweck zu lang?") if erweiterungen.size > 15
+      if erweiterungen.size > 15
+        raise IncorrectSizeException.new("Zuviele Erweiterungen: #{erweiterungen.size}, maximal 15. Verwendungszweck zu lang?")
+      end
 
       @betrag = (_betrag * 100).round.to_i  # Euro-Cent
       if betrag > 0
@@ -32,35 +39,44 @@ module Dtaus
       end
     end
 
-    # 5 Zeichen  Art der Transaktion (7a: 2 Zeichen, 7b: 3 Zeichen)
-    # "04000" Lastschrift des Abbuchungsauftragsverfahren
-    # "05000" Lastschrift des Einzugsermächtigungsverfahren
-    # "05005" Lastschrift aus Verfügung im elektronischen Cash-System
-    # "05006" Wie 05005 mit ausländischen Karten
-    # "05015" Lastschrift aus Verfügung im elec. Cash-System - POZ
-    # "51000" Überweisungs-Gutschrift
-    # "53000" Überweisung Lohn/Gehalt/Rente
-    # "54XXJ" Vermögenswirksame Leistung (VL) mit Sparzulage
-    # "56000" Überweisung öffentlicher Kassen
-    # Die im Textschlüssel mit XX bezeichnete Stelle ist 00 oder der Prozentsatz der Sparzulage.
-    # Die im Textschlüssel mit J bezeichnete Stelle wird bei Übernahme in eine Zahlung automatisch mit der jeweils aktuellen Jahresendziffer (z.B. 7, wenn 97) ersetzt.
+    # Art der Transaktion (5 Zeichen, 7a: 2 Zeichen, 7b: 3 Zeichen)
     #
+    # Zum Beispiel:
+    # * "04000" Lastschrift des Abbuchungsauftragsverfahren
+    # * "05000" Lastschrift des Einzugsermächtigungsverfahren
+    # * "05005" Lastschrift aus Verfügung im elektronischen Cash-System
+    # * "05006" Wie 05005 mit ausländischen Karten
+    # * "05015" Lastschrift aus Verfügung im elec. Cash-System - POZ
+    # * "51000" Überweisungs-Gutschrift
+    # * "53000" Überweisung Lohn/Gehalt/Rente
+    # * "54XXJ" Vermögenswirksame Leistung (VL) mit Sparzulage
+    #           Die im Textschlüssel mit XX bezeichnete Stelle ist 00 oder der Prozentsatz der Sparzulage.
+    #           Die im Textschlüssel mit J bezeichnete Stelle wird bei Übernahme in eine Zahlung automatisch
+    #           mit der jeweils aktuellen Jahresendziffer (z.B. 7, wenn 97) ersetzt.
+    # * "56000" Überweisung öffentlicher Kassen
     def zahlungsart
       '05000'
     end
 
+    # Der Verwendungszweck als Dtaus::Erweiterung
     def verwendungszweck_erweiterungen
       Erweiterung.from_string(:verwendungszweck, text)
     end
 
+    # Alle Erweiterungen der Buchung, bestehend aus
+    # * Inhaber Kundenkonto
+    # * Inhaber Auftraggeberkonto
+    # * Verwendungszweck dieser Buchung
     def erweiterungen
       @erweiterungen ||= konto.erweiterungen + auftraggeber.erweiterungen + verwendungszweck_erweiterungen
     end
 
+    # DTAUS-Repräsentation der Buchung
     def to_dta
       "#{dataC}#{dataC_erweiterungen}"
     end
 
+    # Länge des DTA-Datensatzes
     def size
       (187 + erweiterungen.size * 29)
     end
@@ -82,9 +98,12 @@ module Dtaus
           dta += slice.inject('') {|dta, erweiterung| dta += erweiterung.to_dta}.ljust(128)
         end
       end
-      raise IncorrectSizeException.new("Erweiterungen: #{dta.size} Zeichen") if dta.size > 256 * 3 or dta.size % 128 != 0
-      return dta
-
+      
+      if dta.size > 256 * 3 or dta.size % 128 != 0
+        raise IncorrectSizeException.new("Erweiterungen: #{dta.size} Zeichen") 
+      end
+      
+      dta
     end
 
     # Erstellt ein C-Segments für diese Buchung
@@ -105,8 +124,12 @@ module Dtaus
       dta += ' ' * 3                               #  3 Zeichen  Reserviert, 3 Blanks
       dta += konto.name[0..26].ljust(27)           # 27 Zeichen  Name des Kunden
       dta +=  ' ' * 8                              #  8 Zeichen  Reserviert, 8 Blanks
-      raise IncorrectSizeException.new("C-Segement 1: #{dta.size} Zeichen, 128 erwartet (#{konto.name})") if dta.size != 128
-      return dta
+      
+      if dta.size != 128
+        raise IncorrectSizeException.new("C-Segement 1: #{dta.size} Zeichen, 128 erwartet (#{konto.name})")
+      end
+      
+      dta
     end
 
   end
