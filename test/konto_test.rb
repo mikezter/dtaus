@@ -60,20 +60,26 @@ class ErweiterungTest < Test::Unit::TestCase
   end
   
   def test_erweiterungen
-    erweiterungen = Dtaus::Erweiterung.from_string(:kunde, 'sehr langer text sehr langer text sehr langer text')
-    assert_equal 2, erweiterungen.size
-    assert_equal 'SEHR LANGER TEXT SEHR LANGE', erweiterungen[0].text
-    assert_equal 'R TEXT SEHR LANGER TEXT    ', erweiterungen[1].text
-
-    erweiterungen = Dtaus::Erweiterung.from_string(:kunde, 'kurzer text')
-    assert_equal 1, erweiterungen.size
-    assert_equal 'KURZER TEXT                ', erweiterungen[0].text
-
-    erweiterungen = Dtaus::Erweiterung.from_string(:kunde, 'längerer text mit ümläuten. ßÄÖÜ und trotzdem wird korrekt getrennt')
-    assert_equal 3, erweiterungen.size
-    assert_equal 'LAENGERER TEXT MIT UEMLAEUT', erweiterungen[0].text
-    assert_equal 'EN. SSAEOEUE UND TROTZDEM W', erweiterungen[1].text
-    assert_equal 'IRD KORREKT GETRENNT       ', erweiterungen[2].text
+    konto = Dtaus::Konto.new(1234567890, 12345678, 'Sehr laaaaaanger Inhaber Name GmbH', 'Bank Name', true, 12345)
+    
+    erw = konto.erweiterungen
+    assert erw, "Erweiterungen eines Auftraggeberkontos"
+    assert_equal 2, erw.size
+    assert_equal "SEHR LAAAAAANGER INHABER NA", erw[0].text
+    assert_equal '03', erw[0].type
+    assert_equal "ME GMBH                    ", erw[1].text
+    assert_equal '03', erw[1].type
+    
+    konto = Dtaus::Konto.new(1234567890, 12345678, 'Sehr laaaaaanger Inhaber Name', 'Bank Name')
+    
+    erw = konto.erweiterungen
+    assert erw, "Erweiterungen eines Kundenkontos"
+    assert_equal 2, erw.size
+    assert_equal "SEHR LAAAAAANGER INHABER NA", erw[0].text
+    assert_equal '01', erw[0].type
+    assert_equal "ME                         ", erw[1].text
+    assert_equal '01', erw[1].type
+    
   end
 
 end
