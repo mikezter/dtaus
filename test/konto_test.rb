@@ -5,34 +5,34 @@ class KontoTest < Test::Unit::TestCase
   def test_initialize
     konto = Dtaus::Konto.new(1234567890, 12345678, 'Inhaber', 'Bank Name')
     assert konto, 'Konto kann mit Integer erstellt werden'
-    assert_equal 1234567890, konto.nummer
+    assert_equal 1234567890, konto.kontonummer
     assert_equal 12345678, konto.blz
-    assert_equal 'INHABER', konto.name
-    assert_equal 'BANK NAME', konto.bank
-    assert_equal false, konto.auftraggeber?
+    assert_equal 'INHABER', konto.kontoinhaber
+    assert_equal 'BANK NAME', konto.bankname
+    assert_equal false, konto.is_auftraggeber?
 
     konto = Dtaus::Konto.new('1234567890', '12345678', 'Inhaber', 'Bank Name')
     assert konto, 'Konto kann mit Strings erstellt werden'
-    assert_equal 1234567890, konto.nummer
+    assert_equal 1234567890, konto.kontonummer
     assert_equal 12345678, konto.blz
-    assert_equal 'INHABER', konto.name
-    assert_equal 'BANK NAME', konto.bank
-    assert_equal false, konto.auftraggeber?
+    assert_equal 'INHABER', konto.kontoinhaber
+    assert_equal 'BANK NAME', konto.bankname
+    assert_equal false, konto.is_auftraggeber?
 
     konto = Dtaus::Konto.new(1234567890, 12345678, 'Inhaber', 'Bank Name', true)
-    assert_equal 1234567890, konto.nummer
+    assert_equal 1234567890, konto.kontonummer
     assert_equal 12345678, konto.blz
-    assert_equal 'INHABER', konto.name
-    assert_equal 'BANK NAME', konto.bank
-    assert_equal true, konto.auftraggeber?
+    assert_equal 'INHABER', konto.kontoinhaber
+    assert_equal 'BANK NAME', konto.bankname
+    assert_equal true, konto.is_auftraggeber?
 
     konto = Dtaus::Konto.new(1234567890, 12345678, 'Inhaber', 'Bank Name', false, 12345)
-    assert_equal 1234567890, konto.nummer
+    assert_equal 1234567890, konto.kontonummer
     assert_equal 12345678, konto.blz
-    assert_equal 'INHABER', konto.name
-    assert_equal 'BANK NAME', konto.bank
-    assert_equal false, konto.auftraggeber?
-    assert_equal 12345, konto.kunnr
+    assert_equal 'INHABER', konto.kontoinhaber
+    assert_equal 'BANK NAME', konto.bankname
+    assert_equal false, konto.is_auftraggeber?
+    assert_equal 12345, konto.kundennummer
   end
 
   def test_initialize_incorrect_kontonummer

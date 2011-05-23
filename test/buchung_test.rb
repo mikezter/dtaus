@@ -11,34 +11,34 @@ class BuchungTest < Test::Unit::TestCase
     buchung = Dtaus::Buchung.new(@konto_auftraggeber, @konto, 100.0, "Vielen Dank für Ihren Einkauf!")
     
     assert buchung, "Buchung kann mit zwei Konten angelegt werden"
-    assert_equal @konto, buchung.konto
-    assert_equal @konto_auftraggeber, buchung.auftraggeber
+    assert_equal @konto, buchung.kunden_konto
+    assert_equal @konto_auftraggeber, buchung.auftraggeber_konto
     assert_equal 10000, buchung.betrag
     assert_equal true, buchung.positiv?
-    assert_equal "VIELEN DANK FUER IHREN EINKAUF!", buchung.text
+    assert_equal "VIELEN DANK FUER IHREN EINKAUF!", buchung.verwendungszweck
     assert_equal 2, buchung.verwendungszweck_erweiterungen.size
     assert_equal 4, buchung.erweiterungen.size
 
     buchung = Dtaus::Buchung.new(@konto_auftraggeber, @konto, -100.0, "Vielen Dank für Ihren Einkauf!")
     
     assert buchung, "Buchung kann mit negativem Betrag angelegt werden"
-    assert_equal @konto, buchung.konto
-    assert_equal @konto_auftraggeber, buchung.auftraggeber
+    assert_equal @konto, buchung.kunden_konto
+    assert_equal @konto_auftraggeber, buchung.auftraggeber_konto
     assert_equal 10000, buchung.betrag
     assert_equal false, buchung.positiv?
-    assert_equal "VIELEN DANK FUER IHREN EINKAUF!", buchung.text
+    assert_equal "VIELEN DANK FUER IHREN EINKAUF!", buchung.verwendungszweck
   end
 
   def test_initialize_incorrect_konto
     exception = assert_raise( Dtaus::DtausException ) do
       Dtaus::Buchung.new(123456789, @konto, 100.0, "Vielen Dank für Ihren Einkauf!")
     end
-    assert_equal "Konto expected for Parameter 'auftraggeber', got Fixnum", exception.message
+    assert_equal "Konto expected for Parameter 'auftraggeber_konto', got Fixnum", exception.message
 
     exception = assert_raise( Dtaus::DtausException ) do
       Dtaus::Buchung.new(@konto, 123456789, 100.0, "Vielen Dank für Ihren Einkauf!")
     end
-    assert_equal "Konto expected for Parameter 'konto', got Fixnum", exception.message
+    assert_equal "Konto expected for Parameter 'kunden_konto', got Fixnum", exception.message
   end
   
   def test_initialize_incorrect_betrag

@@ -6,26 +6,26 @@ module Dtaus
   # Betrag und Verwendungszweck
   class Buchung
     
-    attr_reader :betrag, :konto, :text, :positiv, :auftraggeber
+    attr_reader :betrag, :kunden_konto, :auftraggeber_konto, :verwendungszweck, :positiv
     alias :positiv? :positiv
 
     # Buchung erstellen
     #
     # Parameter:
-    # * _auftraggeber, Dtaus::Konto des Auftraggebers
-    # * _konto, Dtaus::Konto des Kunden
+    # * _auftraggeber_konto, Dtaus::Konto des Auftraggebers
+    # * _kunden_konto, Dtaus::Konto des Kunden
     # * _betrag, der Betrag der Buchung in +Float+
-    # * _text, der Verwendungszweck der Buchung,
+    # * _verwendungszweck, der Verwendungszweck der Buchung,
     #   optional, default-Wert ist ""
-    def initialize(_auftraggeber, _konto, _betrag, _text = "")
-      raise DtausException.new("Konto expected for Parameter 'konto', got #{_konto.class}") unless _konto.is_a?(Konto)
-      raise DtausException.new("Konto expected for Parameter 'auftraggeber', got #{_auftraggeber.class}") unless _auftraggeber.is_a?(Konto)
+    def initialize(_auftraggeber_konto, _kunden_konto, _betrag, _verwendungszweck = "")
+      raise DtausException.new("Konto expected for Parameter 'kunden_konto', got #{_kunden_konto.class}") unless _kunden_konto.is_a?(Konto)
+      raise DtausException.new("Konto expected for Parameter 'auftraggeber_konto', got #{_auftraggeber_konto.class}") unless _auftraggeber_konto.is_a?(Konto)
       raise DtausException.new("Betrag is a #{_betrag.class}, expected Float") unless _betrag.is_a?(Float)
       raise DtausException.new("Betrag ist 0.0") if _betrag == 0
 
-      @auftraggeber = _auftraggeber
-      @konto        = _konto
-      @text         = Converter.convert_text(_text)
+      @auftraggeber_konto = _auftraggeber_konto
+      @kunden_konto       = _kunden_konto
+      @verwendungszweck   = Converter.convert_text(_verwendungszweck)
 
       if erweiterungen.size > 15
         raise IncorrectSizeException.new("Zuviele Erweiterungen: #{erweiterungen.size}, maximal 15. Verwendungszweck zu lang?")
@@ -61,7 +61,7 @@ module Dtaus
 
     # Der Verwendungszweck als Dtaus::Erweiterung
     def verwendungszweck_erweiterungen
-      Erweiterung.from_string(:verwendungszweck, text)
+      Erweiterung.from_string(:verwendungszweck, verwendungszweck)
     end
 
     # Alle Erweiterungen der Buchung, bestehend aus
@@ -69,7 +69,9 @@ module Dtaus
     # * Inhaber Auftraggeberkonto
     # * Verwendungszweck dieser Buchung
     def erweiterungen
-      @erweiterungen ||= konto.erweiterungen + auftraggeber.erweiterungen + verwendungszweck_erweiterungen
+      @erweiterungen ||= kunden_konto.erweiterungen + 
+                         auftraggeber_konto.erweiterungen + 
+                         verwendungszweck_erweiterungen
     end
 
     # DTA-Repräsentation der Buchung
@@ -88,11 +90,11 @@ module Dtaus
     # Erstellt den Erweiterungen-Teil des C-Segments für diese Buchung
     #
     def dataC_erweiterungen
-      dta = auftraggeber.name[0..26].ljust(27) # 27 Zeichen  Name des Auftraggebers
-      dta += text[0..26].ljust(27)             # 27 Zeichen  Verwendungszweck
-      dta += '1'                               # 1 Zeichen  Währungskennzeichen ('1' = Euro)
-      dta += '  '                              # 2 Zeichen   Reserviert, 2 Blanks
-      dta += "%02i" % erweiterungen.size       # 2 Zeichen   Anzahl der Erweiterungsdatensätze, "00" bis "15"
+      dta = auftraggeber_konto.kontoinhaber[0..26].ljust(27)    # 27 Zeichen  Name des Auftraggebers
+      dta += verwendungszweck[0..26].ljust(27)                  # 27 Zeichen  Verwendungszweck
+      dta += '1'                                                # 1 Zeichen  Währungskennzeichen ('1' = Euro)
+      dta += '  '                                               # 2 Zeichen   Reserviert, 2 Blanks
+      dta += "%02i" % erweiterungen.size                        # 2 Zeichen   Anzahl der Erweiterungsdatensätze, "00" bis "15"
       dta += erweiterungen[0..1].inject('') {|data, erweiterung| data += erweiterung.to_dta}
       dta = dta.ljust(128)
       if erweiterungen.size > 2
@@ -111,24 +113,24 @@ module Dtaus
     # Erstellt ein C-Segments für diese Buchung
     #
     def dataC
-      dta  = '%04i' % size                         #  4 Zeichen  Länge des Datensatzes, 187 + x * 29 (x..Anzahl Erweiterungsteile)
-      dta += 'C'                                   #  1 Zeichen  Datensatz-Typ, immer 'C'
-      dta += '%08i' % 0                            #  8 Zeichen  Bankleitzahl des Auftraggebers (optional)
-      dta += '%08i' % konto.blz                    #  8 Zeichen  Bankleitzahl des Kunden
-      dta += '%010i' % konto.nummer                # 10 Zeichen  Kontonummer des Kunden
-      dta += '0%011i0' % konto.kunnr               # 13 Zeichen  Verschiedenes 1. Zeichen: "0" 2. - 12. Zeichen: interne Kundennummer oder Nullen 13. Zeichen: "0"
-      dta += zahlungsart                           #  5 Zeichen  Art der Transaktion (7a: 2 Zeichen, 7b: 3 Zeichen)
-      dta += ' '                                   #  1 Zeichen  Reserviert, " " (Blank)
-      dta += '0' * 11                              # 11 Zeichen  Betrag
-      dta += '%08i' % auftraggeber.blz             #  8 Zeichen  Bankleitzahl des Auftraggebers
-      dta += '%010i' % auftraggeber.nummer         # 10 Zeichen  Kontonummer des Auftraggebers
-      dta += '%011i' % betrag                      # 11 Zeichen  Betrag in Euro einschließlich Nachkommastellen, nur belegt, wenn Euro als Währung angegeben wurde
-      dta += ' ' * 3                               #  3 Zeichen  Reserviert, 3 Blanks
-      dta += konto.name[0..26].ljust(27)           # 27 Zeichen  Name des Kunden
-      dta +=  ' ' * 8                              #  8 Zeichen  Reserviert, 8 Blanks
+      dta  = '%04i' % size                                #  4 Zeichen  Länge des Datensatzes, 187 + x * 29 (x..Anzahl Erweiterungsteile)
+      dta += 'C'                                          #  1 Zeichen  Datensatz-Typ, immer 'C'
+      dta += '%08i' % 0                                   #  8 Zeichen  Bankleitzahl des Auftraggebers (optional)
+      dta += '%08i' % kunden_konto.blz                    #  8 Zeichen  Bankleitzahl des Kunden
+      dta += '%010i' % kunden_konto.kontonummer           # 10 Zeichen  Kontonummer des Kunden
+      dta += '0%011i0' % kunden_konto.kundennummer        # 13 Zeichen  Verschiedenes 1. Zeichen: "0" 2. - 12. Zeichen: interne Kundennummer oder Nullen 13. Zeichen: "0"
+      dta += zahlungsart                                  #  5 Zeichen  Art der Transaktion (7a: 2 Zeichen, 7b: 3 Zeichen)
+      dta += ' '                                          #  1 Zeichen  Reserviert, " " (Blank)
+      dta += '0' * 11                                     # 11 Zeichen  Betrag
+      dta += '%08i' % auftraggeber_konto.blz              #  8 Zeichen  Bankleitzahl des Auftraggebers
+      dta += '%010i' % auftraggeber_konto.kontonummer     # 10 Zeichen  Kontonummer des Auftraggebers
+      dta += '%011i' % betrag                             # 11 Zeichen  Betrag in Euro einschließlich Nachkommastellen, nur belegt, wenn Euro als Währung angegeben wurde
+      dta += ' ' * 3                                      #  3 Zeichen  Reserviert, 3 Blanks
+      dta += kunden_konto.kontoinhaber[0..26].ljust(27)   # 27 Zeichen  Name des Kunden
+      dta +=  ' ' * 8                                     #  8 Zeichen  Reserviert, 8 Blanks
       
       if dta.size != 128
-        raise IncorrectSizeException.new("C-Segement 1: #{dta.size} Zeichen, 128 erwartet (#{konto.name})")
+        raise IncorrectSizeException.new("C-Segement 1: #{dta.size} Zeichen, 128 erwartet (#{kunden_konto.kontoinhaber})")
       end
       
       dta

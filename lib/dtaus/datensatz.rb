@@ -3,23 +3,27 @@ module Dtaus
   # Vollständiger DTA-Datensatz mit Header (A), Body (C) und Footer (E)
   class Datensatz
 
-    attr_reader :auftraggeber, :buchungen, :datum, :positiv
+    attr_reader :auftraggeber_konto, :buchungen, :ausfuehrungsdatum, :positiv
     alias :positiv? :positiv
 
     # Vollständigen DTA-Datensatz erstellen
     #
     # Parameter:
-    # * autraggeber, das Dtaus::Konto des Auftraggebers
-    # * datum, gewünschtes Datum des Datensatzes,
+    # * _auftraggeber_konto, das Dtaus::Konto des Auftraggebers
+    # * _ausfuehrungsdatum, Auführungsdatum des Datensatzes,
     #   optional, Default-Wert ist die aktuelle Zeit
     #
-    def initialize(_auftraggeber, _datum = Time.now)
-      raise DtausException.new("Konto expected, got #{_auftraggeber.class}") unless _auftraggeber.is_a?(Konto)
-      raise DtausException.new("Date or Time expected, got #{_datum.class}") unless _datum.is_a?(Date) or _datum.is_a?(Time)
+    def initialize(_auftraggeber_konto, _ausfuehrungsdatum = Time.now)
+      unless _auftraggeber_konto.is_a?(Konto)
+        raise DtausException.new("Konto expected, got #{_auftraggeber_konto.class}") 
+      end
+      unless _ausfuehrungsdatum.is_a?(Date) or _ausfuehrungsdatum.is_a?(Time)
+        raise DtausException.new("Date or Time expected, got #{_ausfuehrungsdatum.class}") 
+      end
 
-      @datum        = _datum
-      @auftraggeber = _auftraggeber
-      @buchungen    = []
+      @ausfuehrungsdatum  = _ausfuehrungsdatum
+      @auftraggeber_konto = _auftraggeber_konto
+      @buchungen          = []
     end
 
     # Art der Transaktionen (2 Zeichen)
@@ -86,13 +90,13 @@ module Dtaus
     # Checksumme der Kontonummern
     #
     def checksum_konto
-      @buchungen.inject(0) {|sum, buchung| sum += buchung.konto.nummer}
+      @buchungen.inject(0) {|sum, buchung| sum += buchung.kunden_konto.kontonummer}
     end
 
     # Checksumme der Bankleitzahlen
     #
     def checksum_blz
-      @buchungen.inject(0) {|sum, buchung| sum += buchung.konto.blz}
+      @buchungen.inject(0) {|sum, buchung| sum += buchung.kunden_konto.blz}
     end
 
     # Checksumme der Beträge
@@ -131,20 +135,20 @@ module Dtaus
     # Insgesamt 128 Zeichen
     #
     def dataA
-      dta = '0128'                                #  4 Zeichen  Länge des Datensatzes, immer 128 Bytes, also immer "0128"
-      dta += 'A'                                  #  1 Zeichen  Datensatz-Typ, immer 'A'
-      dta += typ                                  #  2 Zeichen  Art der Transaktionen
-      dta += '%8i' % auftraggeber.blz             #  8 Zeichen  Bankleitzahl des Auftraggebers
-      dta += '%08i' % 0                           #  8 Zeichen  CST, "00000000", nur belegt, wenn Diskettenabsender Kreditinstitut
-      dta += '%-27.27s' % auftraggeber.name       # 27 Zeichen  Name des Auftraggebers
-      dta += @datum.strftime("%d%m%y")            #  6 Zeichen  aktuelles Datum im Format DDMMJJ
-      dta += ' ' * 4                              #  4 Zeichen  CST, "    " (Blanks)
-      dta += '%010i' % auftraggeber.nummer        # 10 Zeichen  Kontonummer des Auftraggebers
-      dta += '%010i' % 0                          # 10 Zeichen  Optionale Referenznummer
-      dta += ' '  * 15                            # 15 Zeichen  Reserviert, 15 Blanks
-      dta += '%8s' % @datum.strftime("%d%m%Y")    #  8 Zeichen  Optionales Ausführungsdatum im Format DDMMJJJJ. Nicht jünger als Erstellungsdatum (A7), jedoch höchstens 15 Kalendertage später. Sonst Blanks.
-      dta += ' ' * 24                             # 24 Zeichen  Reserviert, 24 Blanks
-      dta += '1'                                  #  1 Zeichen  Währungskennzeichen ('1' = Euro)
+      dta = '0128'                                           #  4 Zeichen  Länge des Datensatzes, immer 128 Bytes, also immer "0128"
+      dta += 'A'                                             #  1 Zeichen  Datensatz-Typ, immer 'A'
+      dta += typ                                             #  2 Zeichen  Art der Transaktionen
+      dta += '%8i' % @auftraggeber_konto.blz                 #  8 Zeichen  Bankleitzahl des Auftraggebers
+      dta += '%08i' % 0                                      #  8 Zeichen  CST, "00000000", nur belegt, wenn Diskettenabsender Kreditinstitut
+      dta += '%-27.27s' % @auftraggeber_konto.kontoinhaber   # 27 Zeichen  Name des Auftraggebers
+      dta += @ausfuehrungsdatum.strftime("%d%m%y")           #  6 Zeichen  aktuelles Datum im Format DDMMJJ
+      dta += ' ' * 4                                         #  4 Zeichen  CST, "    " (Blanks)
+      dta += '%010i' % @auftraggeber_konto.kontonummer       # 10 Zeichen  Kontonummer des Auftraggebers
+      dta += '%010i' % 0                                     # 10 Zeichen  Optionale Referenznummer
+      dta += ' '  * 15                                       # 15 Zeichen  Reserviert, 15 Blanks
+      dta += '%8s' % @ausfuehrungsdatum.strftime("%d%m%Y")   #  8 Zeichen  Optionales Ausführungsdatum im Format DDMMJJJJ. Nicht jünger als Erstellungsdatum (A7), jedoch höchstens 15 Kalendertage später. Sonst Blanks.
+      dta += ' ' * 24                                        # 24 Zeichen  Reserviert, 24 Blanks
+      dta += '1'                                             #  1 Zeichen  Währungskennzeichen ('1' = Euro)
       
       raise IncorrectSizeException.new("A-Segment: #{dta.size} Zeichen, 128 erwartet.") if dta.size != 128
       

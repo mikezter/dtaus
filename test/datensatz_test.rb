@@ -12,20 +12,20 @@ class DatensatzTest < Test::Unit::TestCase
   def test_initialize
     dta = Dtaus::Datensatz.new(@konto_auftraggeber)
     assert dta, "Datensatz kann ohne Datum angelegt werden"
-    assert_equal @konto_auftraggeber, dta.auftraggeber
-    assert_in_delta Time.now, dta.datum, 0.01
+    assert_equal @konto_auftraggeber, dta.auftraggeber_konto
+    assert_in_delta Time.now, dta.ausfuehrungsdatum, 0.01
 
     time = DateTime.parse('2011-05-23T14:59:55+02:00')
     dta = Dtaus::Datensatz.new(@konto_auftraggeber, time)
     assert dta, "Datensatz kann mit Datum und Zeit angelegt werden"
-    assert_equal @konto_auftraggeber, dta.auftraggeber
-    assert_equal time, dta.datum
+    assert_equal @konto_auftraggeber, dta.auftraggeber_konto
+    assert_equal time, dta.ausfuehrungsdatum
 
     date = Date.parse('2011-05-23')
     dta = Dtaus::Datensatz.new(@konto_auftraggeber, date)
     assert dta, "Datensatz kann mit Datum angelegt werden"
-    assert_equal @konto_auftraggeber, dta.auftraggeber
-    assert_equal date, dta.datum
+    assert_equal @konto_auftraggeber, dta.auftraggeber_konto
+    assert_equal date, dta.ausfuehrungsdatum
   end
 
   def test_initialize_incorrect_auftraggeber
