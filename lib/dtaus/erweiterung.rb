@@ -20,25 +20,43 @@ module Dtaus
 
     # Erstellt ein Array von Erweiterungen aus einem beliebig langem String
     #
-    def self.from_string(_typ, _text)
+    # _text ist ein beliebig langer String
+    # _type muss ein Symbol sein, aus :
+    # * :kunde
+    # * :verwendungszweck
+    # * :auftraggeber
+    #
+    # returns: Array of Erweiterung
+    def self.from_string(_type, _text)
       erweiterungen = []
       _text = Converter.convert_text(_text)
       while _text.size > 0
-        erweiterungen << Erweiterung.new(_typ, _text.slice!(0..26))
+        erweiterungen << Erweiterung.new(_type, _text.slice!(0..26))
       end
       erweiterungen
     end
 
-    # erweiterung = Erweiterung.new(:verwendungszweck, 'Rechnung Nr 12345')
-    # _type muss ein Symbol aus :kunde, :verwendungszweck, :auftraggeber sein.
+    # Erstellt eine Erweiterunge
     #
+    # _text ist ein String mit maximaler Länge von 27 Zeichen
+    # _type muss ein Symbol sein, aus :
+    # * :kunde
+    # * :verwendungszweck
+    # * :auftraggeber
+    #
+    # returns: Erweiterung
     def initialize(_type, _text)
-      raise IncorrectErweiterungTypeException.new unless TYPES.keys.include?(_type) or TYPES.values.include?(_type)
+      unless TYPES.keys.include?(_type) or TYPES.values.include?(_type)
+        raise IncorrectErweiterungTypeException.new("Allowed types: :kunde, :verwendungszweck, :auftraggeber") 
+      end
       @text = Converter.convert_text(_text).ljust(27)
-      raise IncorrectSizeException.new("Text size may not exceed 27 Chars") if text.size > 27
+      if text.size > 27
+        raise IncorrectSizeException.new("Text size may not exceed 27 Chars") 
+      end
       @type = TYPES[_type] || _type
     end
-
+    
+    # Erstellt die DTA-Repräsentation einer Erweiterung
     def to_dta
       "#{type}#{text}"
     end

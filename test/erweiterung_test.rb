@@ -12,15 +12,17 @@ class ErweiterungTest < Test::Unit::TestCase
   end
 
   def test_initialize_incorrect_type
-    assert_raise( Dtaus::IncorrectErweiterungTypeException ) do
+    exception = assert_raise( Dtaus::IncorrectErweiterungTypeException ) do
       erw = Dtaus::Erweiterung.new(:fail, 'text')
     end
+    assert_equal "Allowed types: :kunde, :verwendungszweck, :auftraggeber", exception.message
   end
   
   def test_initialize_incorrect_size
-    assert_raise( Dtaus::IncorrectSizeException ) do
+    exception = assert_raise( Dtaus::IncorrectSizeException ) do
       erw = Dtaus::Erweiterung.new(:kunde, '1234567890123456789012345678')
     end
+    assert_equal "Text size may not exceed 27 Chars", exception.message
   end
   
   def test_from_string
