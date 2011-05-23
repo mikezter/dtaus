@@ -47,7 +47,37 @@ class BuchungTest < Test::Unit::TestCase
     assert_equal false, buchung.positiv?
     assert_equal "VIELEN DANK FUER IHREN EINKAUF!", buchung.verwendungszweck
   end
+  
+  def test_initialize_missing_parameters
+    exception = assert_raise( ArgumentError ) do
+      Dtaus::Buchung.new(
+        #:auftraggeber_konto => @konto_auftraggeber,
+        :kunden_konto => @konto,
+        :betrag => 100.0
+      )
+    end
+    assert_equal "Missing params[:auftraggeber_konto] for new Buchung.", exception.message
 
+    exception = assert_raise( ArgumentError ) do
+      Dtaus::Buchung.new(
+        :auftraggeber_konto => @konto_auftraggeber,
+        #:kunden_konto => @konto,
+        :betrag => 100.0
+      )
+    end
+    assert_equal "Missing params[:kunden_konto] for new Buchung.", exception.message
+
+    exception = assert_raise( ArgumentError ) do
+      Dtaus::Buchung.new(
+        :auftraggeber_konto => @konto_auftraggeber,
+        :kunden_konto => @konto
+        #:betrag => 100.0
+      )
+    end
+    assert_equal "Missing params[:betrag] for new Buchung.", exception.message
+
+  end
+  
   def test_initialize_incorrect_konto
     exception = assert_raise( Dtaus::DtausException ) do
       Dtaus::Buchung.new(

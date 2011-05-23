@@ -58,6 +58,49 @@ class KontoTest < Test::Unit::TestCase
     assert_equal 12345, konto.kundennummer
   end
 
+  def test_initialize_missing_parameters
+    exception = assert_raise( ArgumentError ) do
+      Dtaus::Konto.new(
+        #:kontonummer => 1234567890, 
+        :blz => 12345678, 
+        :kontoinhaber => 'Inhaber', 
+        :bankname => 'Bank Name'
+      )
+    end
+    assert_equal "Missing params[:kontonummer] for new Konto.", exception.message
+
+    exception = assert_raise( ArgumentError ) do
+      Dtaus::Konto.new(
+        :kontonummer => 1234567890, 
+        #:blz => 12345678, 
+        :kontoinhaber => 'Inhaber', 
+        :bankname => 'Bank Name'
+      )
+    end
+    assert_equal "Missing params[:blz] for new Konto.", exception.message
+
+    exception = assert_raise( ArgumentError ) do
+      Dtaus::Konto.new(
+        :kontonummer => 1234567890, 
+        :blz => 12345678, 
+        #:kontoinhaber => 'Inhaber', 
+        :bankname => 'Bank Name'
+      )
+    end
+    assert_equal "Missing params[:kontoinhaber] for new Konto.", exception.message
+
+    exception = assert_raise( ArgumentError ) do
+      Dtaus::Konto.new(
+        :kontonummer => 1234567890, 
+        :blz => 12345678, 
+        :kontoinhaber => 'Inhaber'
+        #:bankname => 'Bank Name'
+      )
+    end
+    assert_equal "Missing params[:bankname] for new Konto.", exception.message
+
+  end
+  
   def test_initialize_incorrect_kontonummer
     exception = assert_raise( Dtaus::DtausException ) do
       Dtaus::Konto.new(

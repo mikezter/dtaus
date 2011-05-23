@@ -22,6 +22,10 @@ module Dtaus
         :verwendungszweck => ''
       }.merge(params)
 
+      [:betrag, :kunden_konto, :auftraggeber_konto].each do |attr|
+        raise ArgumentError.new("Missing params[:#{attr}] for new Buchung.") if params[attr].nil?
+      end
+
       unless params[:kunden_konto].is_a?(Konto)
         raise DtausException.new("Konto expected for Parameter 'kunden_konto', got #{params[:kunden_konto].class}")
       end

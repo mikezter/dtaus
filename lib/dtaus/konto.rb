@@ -27,6 +27,10 @@ module Dtaus
         :kundennummer => 0
       }.merge(params)
       
+      [:blz, :bankname, :kontoinhaber, :kontonummer].each do |attr|
+        raise ArgumentError.new("Missing params[:#{attr}] for new Konto.") if params[attr].nil?
+      end
+      
       @is_auftraggeber = params[:is_auftraggeber]
 
       @kontonummer  = Converter.convert_number(params[:kontonummer])
