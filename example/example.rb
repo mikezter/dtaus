@@ -4,15 +4,24 @@ $LOAD_PATH << File.join(ROOT, 'lib', 'dtaus')
 
 require 'dtaus'
 
-auftraggeber = Dtaus::Konto.new(1234567890, 12345670, 'Muster GmbH', 'Deutsche Bank', true)
+konto_auftraggeber = Dtaus::Konto.new(
+  :kontonummer => 1234567890, 
+  :blz => 12345678, 
+  :kontoinhaber => 'Muster GmbH', 
+  :bankname =>'Deutsche Bank',
+  :is_auftraggeber => true,
+  :kundennummer => 12345
+)
+dta = Dtaus::Datensatz.new(konto_auftraggeber)
 
-dta = Dtaus::Datensatz.new(auftraggeber)
-
-kunde = Dtaus::Konto.new(1234567890, 12345670, 'Max Meier-Schulze', 'Sparkasse')
-buchung = Dtaus::Buchung.new(auftraggeber, kunde, 39.99, 'Vielen Dank für ihren Einkauf vom 01.01.2010. Rechnungsnummer 12345')
-
+konto_kunde = Dtaus::Konto.new(
+  :kontonummer => 1234567890, 
+  :blz => 12345678, 
+  :kontoinhaber => 'Max Meier-Schulze', 
+  :bankname =>'Sparkasse'
+)
+buchung = Dtaus::Buchung.new(konto_auftraggeber, konto_kunde, 39.99, 'Vielen Dank für ihren Einkauf')
 dta.add(buchung)
 
 dta.to_file
-
 puts dta

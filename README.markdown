@@ -24,17 +24,28 @@ Ablauf:
 
 In Ruby:
  
-    auftraggeber = Dtaus::Konto.new(1234567890, 12345670, 'Muster GmbH', 'Deutsche Bank', true)
+    require 'dtaus'
 
-    dta = Dtaus::Datensatz.new(auftraggeber)
+    konto_auftraggeber = Dtaus::Konto.new(
+      :kontonummer => 1234567890, 
+      :blz => 12345678, 
+      :kontoinhaber => 'Muster GmbH', 
+      :bankname =>'Deutsche Bank',
+      :is_auftraggeber => true,
+      :kundennummer => 12345
+    )
+    dta = Dtaus::Datensatz.new(konto_auftraggeber)
 
-    kunde = Dtaus::Konto.new(1234567890, 12345670, 'Max Meier-Schulze', 'Sparkasse')
-    buchung = Dtaus::Buchung.new(auftraggeber, kunde, 39.99, 'Vielen Dank für ihren Einkauf vom 01.01.2010. Rechnungsnummer 12345')
-
+    konto_kunde = Dtaus::Konto.new(
+      :kontonummer => 1234567890, 
+      :blz => 12345678, 
+      :kontoinhaber => 'Max Meier-Schulze', 
+      :bankname =>'Sparkasse'
+    )
+    buchung = Dtaus::Buchung.new(konto_auftraggeber, konto_kunde, 39.99, 'Vielen Dank für ihren Einkauf')
     dta.add(buchung)
 
     dta.to_file
-
     puts dta
 
 Siehe: [example/example.rb](https://github.com/alphaone/dtaus/blob/master/example/example.rb)
@@ -49,7 +60,7 @@ Todo:
 ------
 
 * Gutschriften ermöglichen
-* Parameter als Hash annehmen (vor allem für `Konto` und `Buchung`)
+* Parameter als Hash annehmen (vor allem für `Buchung`)
 * weiteres?
 
 Weitere Informationen

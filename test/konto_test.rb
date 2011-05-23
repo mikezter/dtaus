@@ -3,7 +3,12 @@ require File.expand_path(File.dirname(__FILE__) + "/test_helper")
 class KontoTest < Test::Unit::TestCase
 
   def test_initialize
-    konto = Dtaus::Konto.new(1234567890, 12345678, 'Inhaber', 'Bank Name')
+    konto = Dtaus::Konto.new(
+      :kontonummer => 1234567890, 
+      :blz => 12345678, 
+      :kontoinhaber => 'Inhaber', 
+      :bankname =>'Bank Name'
+    )
     assert konto, 'Konto kann mit Integer erstellt werden'
     assert_equal 1234567890, konto.kontonummer
     assert_equal 12345678, konto.blz
@@ -11,7 +16,12 @@ class KontoTest < Test::Unit::TestCase
     assert_equal 'BANK NAME', konto.bankname
     assert_equal false, konto.is_auftraggeber?
 
-    konto = Dtaus::Konto.new('1234567890', '12345678', 'Inhaber', 'Bank Name')
+    konto = Dtaus::Konto.new(
+      :kontonummer => '1234567890', 
+      :blz => '12345678', 
+      :kontoinhaber => 'Inhaber', 
+      :bankname =>'Bank Name'
+    )
     assert konto, 'Konto kann mit Strings erstellt werden'
     assert_equal 1234567890, konto.kontonummer
     assert_equal 12345678, konto.blz
@@ -19,14 +29,27 @@ class KontoTest < Test::Unit::TestCase
     assert_equal 'BANK NAME', konto.bankname
     assert_equal false, konto.is_auftraggeber?
 
-    konto = Dtaus::Konto.new(1234567890, 12345678, 'Inhaber', 'Bank Name', true)
+    konto = Dtaus::Konto.new(
+      :kontonummer => 1234567890, 
+      :blz => 12345678, 
+      :kontoinhaber => 'Inhaber', 
+      :bankname =>'Bank Name',
+      :is_auftraggeber => true
+    )
     assert_equal 1234567890, konto.kontonummer
     assert_equal 12345678, konto.blz
     assert_equal 'INHABER', konto.kontoinhaber
     assert_equal 'BANK NAME', konto.bankname
     assert_equal true, konto.is_auftraggeber?
 
-    konto = Dtaus::Konto.new(1234567890, 12345678, 'Inhaber', 'Bank Name', false, 12345)
+    konto = Dtaus::Konto.new(
+      :kontonummer => 1234567890, 
+      :blz => 12345678, 
+      :kontoinhaber => 'Inhaber', 
+      :bankname =>'Bank Name',
+      :is_auftraggeber => false,
+      :kundennummer => 12345
+    )
     assert_equal 1234567890, konto.kontonummer
     assert_equal 12345678, konto.blz
     assert_equal 'INHABER', konto.kontoinhaber
@@ -37,30 +60,57 @@ class KontoTest < Test::Unit::TestCase
 
   def test_initialize_incorrect_kontonummer
     exception = assert_raise( Dtaus::DtausException ) do
-      Dtaus::Konto.new(12345678901, 12345678, 'Inhaber', 'Bank Name')
+      Dtaus::Konto.new(
+        :kontonummer => 12345678901, 
+        :blz => 12345678, 
+        :kontoinhaber => 'Inhaber', 
+        :bankname => 'Bank Name'
+      )
     end
     assert_equal "Ungültige Kontonummer: 12345678901", exception.message
 
     exception = assert_raise( Dtaus::DtausException ) do
-      Dtaus::Konto.new(0, 12345678, 'Inhaber', 'Bank Name')
+      Dtaus::Konto.new(
+        :kontonummer => 0, 
+        :blz => 12345678, 
+        :kontoinhaber => 'Inhaber', 
+        :bankname => 'Bank Name'
+      )
     end
     assert_equal "Ungültige Kontonummer: 0", exception.message
   end
   
   def test_initialize_incorrect_blz
     exception = assert_raise( Dtaus::DtausException ) do
-      Dtaus::Konto.new(1234567890, 123456789, 'Inhaber', 'Bank Name')
+      Dtaus::Konto.new(
+        :kontonummer => 1234567890, 
+        :blz => 123456789, 
+        :kontoinhaber => 'Inhaber', 
+        :bankname => 'Bank Name'
+      )
     end
     assert_equal "Ungültige Bankleitzahl: 123456789", exception.message
 
     exception = assert_raise( Dtaus::DtausException ) do
-      Dtaus::Konto.new(1234567890, 0, 'Inhaber', 'Bank Name')
+      Dtaus::Konto.new(
+        :kontonummer => 1234567890, 
+        :blz => 0, 
+        :kontoinhaber => 'Inhaber', 
+        :bankname => 'Bank Name'
+      )
     end
     assert_equal "Ungültige Bankleitzahl: 0", exception.message
   end
   
   def test_erweiterungen
-    konto = Dtaus::Konto.new(1234567890, 12345678, 'Sehr laaaaaanger Inhaber Name GmbH', 'Bank Name', true, 12345)
+    konto = Dtaus::Konto.new(
+      :kontonummer => 1234567890, 
+      :blz => 12345678, 
+      :kontoinhaber => 'Sehr laaaaaanger Inhaber Name GmbH', 
+      :bankname =>'Bank Name',
+      :is_auftraggeber => true,
+      :kundennummer => 12345
+    )
     
     erw = konto.erweiterungen
     assert erw, "Erweiterungen eines Auftraggeberkontos"
@@ -70,7 +120,12 @@ class KontoTest < Test::Unit::TestCase
     assert_equal "ME GMBH                    ", erw[1].text
     assert_equal '03', erw[1].type
     
-    konto = Dtaus::Konto.new(1234567890, 12345678, 'Sehr laaaaaanger Inhaber Name', 'Bank Name')
+    konto = Dtaus::Konto.new(
+      :kontonummer => 1234567890, 
+      :blz => 12345678, 
+      :kontoinhaber => 'Sehr laaaaaanger Inhaber Name', 
+      :bankname => 'Bank Name'
+    )
     
     erw = konto.erweiterungen
     assert erw, "Erweiterungen eines Kundenkontos"

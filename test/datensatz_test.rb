@@ -3,8 +3,19 @@ require File.expand_path(File.dirname(__FILE__) + "/test_helper")
 class DatensatzTest < Test::Unit::TestCase
 
   def setup
-    @konto = Dtaus::Konto.new(1234567890, 12345678, 'Kunde', 'Bank Name')
-    @konto_auftraggeber = Dtaus::Konto.new(9876543210, 12345678, 'Auftraggeber', 'Bank Name', true)
+    @konto = Dtaus::Konto.new(
+      :kontonummer => 1234567890, 
+      :blz => 12345678, 
+      :kontoinhaber => 'Kunde', 
+      :bankname =>'Bank Name'
+    )
+    @konto_auftraggeber = Dtaus::Konto.new(
+      :kontonummer => 9876543210, 
+      :blz => 12345678, 
+      :kontoinhaber => 'Auftraggeber', 
+      :bankname =>'Bank Name', 
+      :is_auftraggeber => true
+    )
     @buchung = Dtaus::Buchung.new(@konto_auftraggeber, @konto, 100.0, "Vielen Dank für Ihren Einkauf!")
     @buchung_negativ = Dtaus::Buchung.new(@konto_auftraggeber, @konto, -100.0, "Vielen Dank für Ihren Einkauf!")
   end

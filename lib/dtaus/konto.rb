@@ -11,28 +11,39 @@ module Dtaus
     
     # Erstellt ein neues Konto
     #
-    # Parameter:
-    # * _kontonummer, die Kontonummer
-    # * _blz, die Bankleitzahl
-    # * _kontoinhaber, der Name der Kontoinhabers
-    # * _bankname, der Name der Bank
-    # * _is_auftraggeber, Boolischer Wert, ob dieses Konto ein Auftraggeberkonto ist,
-    #   optional, default-Wert ist +false+
-    # * _kundennummer, eine Kundennummer,
-    #   optional, defautl-Wert ist <tt>0</tt>
-    def initialize(_kontonummer, _blz, _kontoinhaber, _bankname, _is_auftraggeber = false, _kundennummer = 0)
-      @is_auftraggeber = _is_auftraggeber
+    # +params+ as Hash:
+    # [<tt>:kontonummer</tt>] die Kontonummer
+    # [<tt>:blz</tt>] die Bankleitzahl
+    # [<tt>:kontoinhaber</tt>] der Name der Kontoinhabers
+    # [<tt>:bankname</tt>] der Name der Bank
+    # [<tt>:is_auftraggeber</tt>] Boolischer Wert, ob dieses Konto ein Auftraggeberkonto ist;
+    #                             wird gebraucht, um den Typ der Erweiterung zu bestimmen;
+    #                             _optional_, default-Wert ist +false+
+    # [<tt>:kundennummer</tt>] eine Kundennummer; _optional_, defautl-Wert ist <tt>0</tt>
+    def initialize(params)
+      # defaults
+      params = {
+        :is_auftraggeber => false,
+        :kundennummer => 0
+      }.merge(params)
+      
+      @is_auftraggeber = params[:is_auftraggeber]
 
-      @kontonummer  = Converter.convert_number(_kontonummer)
-      @blz          = Converter.convert_number(_blz)
-      @kundennummer = Converter.convert_number(_kundennummer)
-      @kontoinhaber = Converter.convert_text(_kontoinhaber)
-      @bankname     = Converter.convert_text(_bankname)
+      @kontonummer  = Converter.convert_number(params[:kontonummer])
+      @blz          = Converter.convert_number(params[:blz])
+      @kundennummer = Converter.convert_number(params[:kundennummer])
+      @kontoinhaber = Converter.convert_text(params[:kontoinhaber])
+      @bankname     = Converter.convert_text(params[:bankname])
 
-      raise DtausException.new("Ungültige Kontonummer: #{kontonummer}") if kontonummer == 0 or kontonummer.to_s.size > 10
-      raise DtausException.new("Ungültige Bankleitzahl: #{blz}")   if blz  == 0 or blz.to_s.size > 8
+      if @kontonummer == 0 or @kontonummer.to_s.size > 10
+        raise DtausException.new("Ungültige Kontonummer: #{@kontonummer}") 
+      end
+      if @blz  == 0 or @blz.to_s.size > 8
+        raise DtausException.new("Ungültige Bankleitzahl: #{@blz}")   
+      end
+      
     end
-
+    
     # Erstellt eine Liste von Erweiterungen für den Kontoinhaber
     def erweiterungen
       Erweiterung.from_string(is_auftraggeber? ? :auftraggeber : :kunde, kontoinhaber)

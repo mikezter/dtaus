@@ -3,8 +3,19 @@ require File.expand_path(File.dirname(__FILE__) + "/test_helper")
 class BuchungTest < Test::Unit::TestCase
 
   def setup
-    @konto = Dtaus::Konto.new(1234567890, 12345678, 'Kunde', 'Bank Name')
-    @konto_auftraggeber = Dtaus::Konto.new(9876543210, 12345678, 'Auftraggeber', 'Bank Name', true)
+    @konto = Dtaus::Konto.new(
+      :kontonummer => 1234567890, 
+      :blz => 12345678, 
+      :kontoinhaber => 'Kunde', 
+      :bankname =>'Bank Name'
+    )
+    @konto_auftraggeber = Dtaus::Konto.new(
+      :kontonummer => 9876543210, 
+      :blz => 12345678, 
+      :kontoinhaber => 'Auftraggeber', 
+      :bankname =>'Bank Name', 
+      :is_auftraggeber => true
+    )
   end
         
   def test_initialize
@@ -55,8 +66,19 @@ class BuchungTest < Test::Unit::TestCase
 
   def test_initialize_incorrect_erweiterungen
     exception = assert_raise( Dtaus::IncorrectSizeException ) do
-      konto = Dtaus::Konto.new(1234567890, 12345678, "seeeeeeeehr laaaaaaaanger naaaaaame"*3, 'Bank Name')
-      konto_auftraggeber = Dtaus::Konto.new(9876543210, 12345678, "noch viiiiiieeeeel läääääääängerer name"*3, 'Bank Name', true)
+      konto = Dtaus::Konto.new(
+        :kontonummer => 1234567890, 
+        :blz => 12345678, 
+        :kontoinhaber => 'seeeeeeeehr laaaaaaaanger naaaaaame'*3, 
+        :bankname =>'Bank Name'
+      )
+      konto_auftraggeber = Dtaus::Konto.new(
+        :kontonummer => 9876543210, 
+        :blz => 12345678, 
+        :kontoinhaber => 'noch viiiiiieeeeel läääääääängerer name'*3, 
+        :bankname =>'Bank Name',
+        :is_auftraggeber => true
+      )
 
       Dtaus::Buchung.new(konto_auftraggeber, konto, 100.0, "Vielen Dank für Ihren Einkauf!" * 5)
     end
@@ -70,6 +92,8 @@ class BuchungTest < Test::Unit::TestCase
   end
 
   def test_to_dta
+    assert_equal true, @konto_auftraggeber.is_auftraggeber?
+    
     buchung = Dtaus::Buchung.new(@konto_auftraggeber, @konto, 100.0, "Vielen Dank für Ihren Einkauf!")
     
     assert_equal "0303C00000000123456781234567890000000000000005000 "+
