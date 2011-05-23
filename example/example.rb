@@ -20,7 +20,12 @@ konto_kunde = Dtaus::Konto.new(
   :kontoinhaber => 'Max Meier-Schulze', 
   :bankname =>'Sparkasse'
 )
-buchung = Dtaus::Buchung.new(konto_auftraggeber, konto_kunde, 39.99, 'Vielen Dank für ihren Einkauf')
+buchung = Dtaus::Buchung.new(
+  :auftraggeber_konto => konto_auftraggeber,
+  :kunden_konto => konto_kunde,
+  :betrag => 39.99,
+  :verwendungszweck => "Vielen Dank für Ihren Einkauf!"
+)
 dta.add(buchung)
 
 dta.to_file

@@ -20,7 +20,7 @@ module Dtaus
     #                             wird gebraucht, um den Typ der Erweiterung zu bestimmen;
     #                             _optional_, default-Wert ist +false+
     # [<tt>:kundennummer</tt>] eine Kundennummer; _optional_, defautl-Wert ist <tt>0</tt>
-    def initialize(params)
+    def initialize(params = {})
       # defaults
       params = {
         :is_auftraggeber => false,

@@ -16,8 +16,18 @@ class DatensatzTest < Test::Unit::TestCase
       :bankname =>'Bank Name', 
       :is_auftraggeber => true
     )
-    @buchung = Dtaus::Buchung.new(@konto_auftraggeber, @konto, 100.0, "Vielen Dank für Ihren Einkauf!")
-    @buchung_negativ = Dtaus::Buchung.new(@konto_auftraggeber, @konto, -100.0, "Vielen Dank für Ihren Einkauf!")
+    @buchung = Dtaus::Buchung.new(
+      :auftraggeber_konto => @konto_auftraggeber,
+      :kunden_konto => @konto,
+      :betrag => 100.0,
+      :verwendungszweck => "Vielen Dank für Ihren Einkauf!"
+    )
+    @buchung_negativ = Dtaus::Buchung.new(
+      :auftraggeber_konto => @konto_auftraggeber,
+      :kunden_konto => @konto,
+      :betrag => -100.0,
+      :verwendungszweck => "Vielen Dank für Ihren Einkauf!"
+    )
   end
 
   def test_initialize

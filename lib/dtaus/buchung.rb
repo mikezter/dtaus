@@ -11,31 +11,43 @@ module Dtaus
 
     # Buchung erstellen
     #
-    # Parameter:
-    # * _auftraggeber_konto, Dtaus::Konto des Auftraggebers
-    # * _kunden_konto, Dtaus::Konto des Kunden
-    # * _betrag, der Betrag der Buchung in +Float+
-    # * _verwendungszweck, der Verwendungszweck der Buchung,
-    #   optional, default-Wert ist ""
-    def initialize(_auftraggeber_konto, _kunden_konto, _betrag, _verwendungszweck = "")
-      raise DtausException.new("Konto expected for Parameter 'kunden_konto', got #{_kunden_konto.class}") unless _kunden_konto.is_a?(Konto)
-      raise DtausException.new("Konto expected for Parameter 'auftraggeber_konto', got #{_auftraggeber_konto.class}") unless _auftraggeber_konto.is_a?(Konto)
-      raise DtausException.new("Betrag is a #{_betrag.class}, expected Float") unless _betrag.is_a?(Float)
-      raise DtausException.new("Betrag ist 0.0") if _betrag == 0
+    # +params+ as Hash:
+    # [<tt>:auftraggeber_konto</tt>] Dtaus::Konto des Auftraggebers
+    # [<tt>:kunden_konto</tt>] Dtaus::Konto des Kunden
+    # [<tt>:betrag</tt>] der Betrag der Buchung in +Float+
+    # [<tt>:verwendungszweck</tt>] der Verwendungszweck der Buchung; _optional_, Default-Wert ist ""
+    def initialize(params = {})
+      # defaults
+      params = {
+        :verwendungszweck => ''
+      }.merge(params)
 
-      @auftraggeber_konto = _auftraggeber_konto
-      @kunden_konto       = _kunden_konto
-      @verwendungszweck   = Converter.convert_text(_verwendungszweck)
+      unless params[:kunden_konto].is_a?(Konto)
+        raise DtausException.new("Konto expected for Parameter 'kunden_konto', got #{params[:kunden_konto].class}")
+      end
+      unless params[:auftraggeber_konto].is_a?(Konto)
+        raise DtausException.new("Konto expected for Parameter 'auftraggeber_konto', got #{params[:auftraggeber_konto].class}")
+      end
+      unless params[:betrag].is_a?(Float)
+        raise DtausException.new("Betrag is a #{params[:betrag].class}, expected Float")
+      end
+      if params[:betrag] == 0
+        raise DtausException.new("Betrag ist 0.0") 
+      end
+
+      @auftraggeber_konto = params[:auftraggeber_konto]
+      @kunden_konto       = params[:kunden_konto]
+      @verwendungszweck   = Converter.convert_text(params[:verwendungszweck])
 
       if erweiterungen.size > 15
         raise IncorrectSizeException.new("Zuviele Erweiterungen: #{erweiterungen.size}, maximal 15. Verwendungszweck zu lang?")
       end
 
-      @betrag = (_betrag * 100).round.to_i  # Euro-Cent
-      if betrag > 0
+      @betrag = (params[:betrag] * 100).round.to_i  # Euro-Cent
+      if @betrag > 0
         @positiv  = true
       else
-        @betrag   = -betrag # only store positive amounts
+        @betrag   = @betrag * -1 # only store positive amounts
         @positiv  = false
       end
     end
@@ -97,6 +109,7 @@ module Dtaus
       dta += "%02i" % erweiterungen.size                        # 2 Zeichen   Anzahl der Erweiterungsdatensätze, "00" bis "15"
       dta += erweiterungen[0..1].inject('') {|data, erweiterung| data += erweiterung.to_dta}
       dta = dta.ljust(128)
+      
       if erweiterungen.size > 2
         erweiterungen[2..-1].each_slice(4) do |slice|
           dta += slice.inject('') {|dta, erweiterung| dta += erweiterung.to_dta}.ljust(128)

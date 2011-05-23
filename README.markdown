@@ -42,11 +42,17 @@ In Ruby:
       :kontoinhaber => 'Max Meier-Schulze', 
       :bankname =>'Sparkasse'
     )
-    buchung = Dtaus::Buchung.new(konto_auftraggeber, konto_kunde, 39.99, 'Vielen Dank für ihren Einkauf')
+    buchung = Dtaus::Buchung.new(
+      :auftraggeber_konto => konto_auftraggeber,
+      :kunden_konto => konto_kunde,
+      :betrag => 39.99,
+      :verwendungszweck => "Vielen Dank für Ihren Einkauf!"
+    )
     dta.add(buchung)
 
     dta.to_file
     puts dta
+
 
 Siehe: [example/example.rb](https://github.com/alphaone/dtaus/blob/master/example/example.rb)
  
@@ -60,7 +66,6 @@ Todo:
 ------
 
 * Gutschriften ermöglichen
-* Parameter als Hash annehmen (vor allem für `Buchung`)
 * weiteres?
 
 Weitere Informationen
