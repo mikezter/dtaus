@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 module Dtaus
   
   # Utility class for converting strings and numbers to DTA-conform representations

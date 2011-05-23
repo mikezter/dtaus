@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 module Dtaus
   
   # Vollständiger DTA-Datensatz mit Header (A), Body (C) und Footer (E)

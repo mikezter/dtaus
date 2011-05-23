@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 module Dtaus
   
   # Generische Exception für Dtaus
