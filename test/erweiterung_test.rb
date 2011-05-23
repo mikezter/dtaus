@@ -1,6 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + "/test_helper")
 
-class TestErweiterung < Test::Unit::TestCase
+class ErweiterungTest < Test::Unit::TestCase
 
   def test_initialize
     erw = Dtaus::Erweiterung.new(:kunde, 'text')

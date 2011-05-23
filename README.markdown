@@ -37,7 +37,7 @@ In Ruby:
 
     puts dta
 
-Siehe: example/example.rb
+Siehe: [example/example.rb](https://github.com/alphaone/dtaus/blob/master/example/example.rb)
  
 Einschränkungen:
 ----------------
