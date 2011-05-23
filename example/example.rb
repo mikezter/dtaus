@@ -6,7 +6,7 @@ require 'dtaus'
 
 auftraggeber = Dtaus::Konto.new(1234567890, 12345670, 'Muster GmbH', 'Deutsche Bank', true)
 
-dta = Dtaus::DtaGenerator.new(auftraggeber)
+dta = Dtaus::Datensatz.new(auftraggeber)
 
 kunde = Dtaus::Konto.new(1234567890, 12345670, 'Max Meier-Schulze', 'Sparkasse')
 buchung = Dtaus::Buchung.new(auftraggeber, kunde, 39.99, 'Vielen Dank für ihren Einkauf vom 01.01.2010. Rechnungsnummer 12345')

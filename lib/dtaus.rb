@@ -3,7 +3,7 @@
 require 'date'
 require 'enumerator'
 
-require 'dtaus/dta_generator'
+require 'dtaus/datensatz'
 require 'dtaus/buchung'
 require 'dtaus/konto'
 require 'dtaus/erweiterung'

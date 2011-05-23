@@ -1,7 +1,7 @@
 module Dtaus
   
   # Vollständiger DTA-Datensatz mit Header (A), Body (C) und Footer (E)
-  class DtaGenerator
+  class Datensatz
 
     attr_reader :auftraggeber, :buchungen, :datum, :positiv
     alias :positiv? :positiv
