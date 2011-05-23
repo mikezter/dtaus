@@ -56,10 +56,11 @@ module Dtaus
       @type = TYPES[_type] || _type
     end
     
-    # Erstellt die DTA-Repräsentation einer Erweiterung
+    # DTA-Repräsentation einer Erweiterung
     def to_dta
       "#{type}#{text}"
     end
+    alias :to_s :to_dta
 
   end
 

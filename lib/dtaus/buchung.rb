@@ -3,8 +3,9 @@
 module Dtaus
 
   # Buchungsdaten mit zwei Konten (Auftraggeber und Kunde),
-  # Betrag und erwendungszweck
+  # Betrag und Verwendungszweck
   class Buchung
+    
     attr_reader :betrag, :konto, :text, :positiv, :auftraggeber
     alias :positiv? :positiv
 
@@ -15,7 +16,7 @@ module Dtaus
     # * _konto, Dtaus::Konto des Kunden
     # * _betrag, der Betrag der Buchung in +Float+
     # * _text, der Verwendungszweck der Buchung,
-    #          optional, default-Wert ist +""+
+    #   optional, default-Wert ist ""
     def initialize(_auftraggeber, _konto, _betrag, _text = "")
       raise DtausException.new("Konto expected for Parameter 'konto', got #{_konto.class}") unless _konto.is_a?(Konto)
       raise DtausException.new("Konto expected for Parameter 'auftraggeber', got #{_auftraggeber.class}") unless _auftraggeber.is_a?(Konto)
@@ -50,9 +51,9 @@ module Dtaus
     # * "51000" Überweisungs-Gutschrift
     # * "53000" Überweisung Lohn/Gehalt/Rente
     # * "54XXJ" Vermögenswirksame Leistung (VL) mit Sparzulage
-    #           Die im Textschlüssel mit XX bezeichnete Stelle ist 00 oder der Prozentsatz der Sparzulage.
-    #           Die im Textschlüssel mit J bezeichnete Stelle wird bei Übernahme in eine Zahlung automatisch
-    #           mit der jeweils aktuellen Jahresendziffer (z.B. 7, wenn 97) ersetzt.
+    #   Die im Textschlüssel mit XX bezeichnete Stelle ist 00 oder der Prozentsatz der Sparzulage.
+    #   Die im Textschlüssel mit J bezeichnete Stelle wird bei Übernahme in eine Zahlung automatisch
+    #   mit der jeweils aktuellen Jahresendziffer (z.B. 7, wenn 97) ersetzt.
     # * "56000" Überweisung öffentlicher Kassen
     def zahlungsart
       '05000'
@@ -71,10 +72,11 @@ module Dtaus
       @erweiterungen ||= konto.erweiterungen + auftraggeber.erweiterungen + verwendungszweck_erweiterungen
     end
 
-    # DTAUS-Repräsentation der Buchung
+    # DTA-Repräsentation der Buchung
     def to_dta
       "#{dataC}#{dataC_erweiterungen}"
     end
+    alias :to_s :to_dta
 
     # Länge des DTA-Datensatzes
     def size
