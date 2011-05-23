@@ -14,8 +14,8 @@ module Dtaus
     #   optional, Default-Wert ist die aktuelle Zeit
     #
     def initialize(_auftraggeber, _datum = Time.now)
-      raise DtausException.new("Konto expected, got #{auftraggeber.class}") unless _auftraggeber.is_a?(Konto)
-      raise DtausException.new("Date or Time expected, got #{datum.class}") unless _datum.is_a?(Date) or datum.is_a?(Time)
+      raise DtausException.new("Konto expected, got #{_auftraggeber.class}") unless _auftraggeber.is_a?(Konto)
+      raise DtausException.new("Date or Time expected, got #{_datum.class}") unless _datum.is_a?(Date) or _datum.is_a?(Time)
 
       @datum        = _datum
       @auftraggeber = _auftraggeber
@@ -59,10 +59,13 @@ module Dtaus
     #
     def to_dta
       raise DtausException.new("Keine Buchungen vorhanden") unless buchungen.size > 0
+      
       temp  = dataA
       temp += buchungen.inject(''){|temp, buchung| temp += buchung.to_dta}
       temp += dataE
+      
       raise IncorrectSizeException.new("Datensatzlänge ist nicht durch 128 teilbar: #{temp.size}") if temp.size % 128 != 0
+      
       temp
     end
     alias :to_s :to_dta
@@ -70,7 +73,7 @@ module Dtaus
     # Schreibt die DTAUS-Datei
     #
     # Parameter:
-    # * filename, Name der zu schreibenden Datei, Standarddateiname ist <tt>DTAUS0.TXT</tt>
+    # * filename, Name der zu schreibenden Datei, Default-Wert ist <tt>DTAUS0.TXT</tt>
     #
     def to_file(filename = 'DTAUS0.TXT')
       File.open(filename, 'w') do |file|
