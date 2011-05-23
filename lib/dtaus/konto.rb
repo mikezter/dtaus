@@ -2,8 +2,8 @@
 
 module Dtaus
 
-  # Kontodaten mit Name des Inhabers, Bank, Bankleitzahl und Kontonummer
-  # Kann zwischen Auftraggeber und Kundenkonto unterscheiden
+  # Kontodaten mit Name des Inhabers, Bank, Bankleitzahl und Kontonummer.
+  # Kann zwischen Auftraggeber und Kundenkonto unterscheiden.
   class Konto
     attr_reader  :blz, :bank, :name, :kunnr, :auftraggeber, :nummer
 
@@ -16,10 +16,10 @@ module Dtaus
     # * _blz, die Bankleitzahl
     # * _name, der Name der Kontoinhabers
     # * _bank, der Name der Bank
-    # * _auftraggeber, Boolischer Wert, ob diese Konto ein Auftraggeberkonto ist,
-    #                  optional, default-Wert ist +false+
+    # * _auftraggeber, Boolischer Wert, ob dieses Konto ein Auftraggeberkonto ist,
+    #   optional, default-Wert ist +false+
     # * _kunnr, eine Kundennummer,
-    #           optional, defautl-Wert ist +0+
+    #   optional, defautl-Wert ist <tt>0</tt>
     def initialize(_nummer, _blz, _name, _bank, _auftraggeber = false, _kunnr = 0)
       @auftraggeber = _auftraggeber
 
