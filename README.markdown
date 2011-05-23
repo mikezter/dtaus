@@ -16,17 +16,17 @@ Usage
 Ablauf:
 
 * Erstelle ein Auftraggeber-Konto 
-* Erstelle ein DTAUS Objekt für diesen Auftraggeber
+* Erstelle ein Datensatz für diesen Auftraggeber
 * Erstelle ein oder mehrerere Kunden-Konten mit dazugehörigen Buchungen
-* Füge die Buchungen dem DTAUS Objekt hinzu
-* Schreibe eine DTAUS Datei
+* Füge die Buchungen dem Datensatz hinzu
+* Schreibe den Datensatz als DTAUS Datei
 * _Alternativ:_ Gib die Daten als String aus
 
 In Ruby:
  
     auftraggeber = Dtaus::Konto.new(1234567890, 12345670, 'Muster GmbH', 'Deutsche Bank', true)
 
-    dta = Dtaus::DtaGenerator.new(auftraggeber)
+    dta = Dtaus::Datensatz.new(auftraggeber)
 
     kunde = Dtaus::Konto.new(1234567890, 12345670, 'Max Meier-Schulze', 'Sparkasse')
     buchung = Dtaus::Buchung.new(auftraggeber, kunde, 39.99, 'Vielen Dank für ihren Einkauf vom 01.01.2010. Rechnungsnummer 12345')
