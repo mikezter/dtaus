@@ -16,27 +16,45 @@ Usage
 Ablauf:
 
 * Erstelle ein Auftraggeber-Konto 
-* Erstelle ein DTAUS Objekt für diesen Auftraggeber
+* Erstelle ein Datensatz für diesen Auftraggeber
 * Erstelle ein oder mehrerere Kunden-Konten mit dazugehörigen Buchungen
-* Füge die Buchungen dem DTAUS Objekt hinzu
-* Schreibe eine DTAUS Datei
-* _Alternativ:_ Gebe die Daten als String aus
+* Füge die Buchungen dem Datensatz hinzu
+* Schreibe den Datensatz als DTAUS Datei
+* _Alternativ:_ Gib die Daten als String aus
 
 In Ruby:
  
-    auftraggeber = DTAUS::Konto.new(1234567890, 12345670, 'Muster GmbH', 'Deutsche Bank', true)
+``` ruby
+require 'dtaus'
 
-    dta = DTAUS.new(auftraggeber)
+konto_auftraggeber = Dtaus::Konto.new(
+  :kontonummer => 1234567890, 
+  :blz => 82070024, 
+  :kontoinhaber => 'inoxio Quality Services GmbH', 
+  :bankname =>'Deutsche Bank',
+  :is_auftraggeber => true
+)
+dta = Dtaus::Datensatz.new(konto_auftraggeber)
 
-    kunde = DTAUS::Konto.new(1234567890, 12345670, 'Max Meier-Schulze', 'Sparkasse')
-    buchung = DTAUS::Buchung.new(auftraggeber, kunde, 39.99, 'Vielen Dank für ihren Einkauf vom 01.01.2010. Rechnungsnummer 12345')
+konto_kunde = Dtaus::Konto.new(
+  :kontonummer => 1234567890, 
+  :blz => 12030000, 
+  :kontoinhaber => 'Max Meier-Schulze', 
+  :bankname =>'Sparkasse',
+  :kundennummer => 77777777777
+)
+buchung = Dtaus::Buchung.new(
+  :kunden_konto => konto_kunde,
+  :betrag => "9,99",
+  :verwendungszweck => "Vielen Dank für Ihren Einkauf!"
+)
+dta.add(buchung)
 
-    dta.add(buchung)
+dta.to_file
+puts dta
+```
 
-    dta.to_file
-
-    puts dta
-
+Siehe: [example/example.rb](https://github.com/alphaone/dtaus/blob/master/example/example.rb)
  
 Einschränkungen:
 ----------------
@@ -48,8 +66,6 @@ Todo:
 ------
 
 * Gutschriften ermöglichen
-* Refactor to Module instead of Class with Subclasses
-* Parameter als Hash annehmen (vor allem für `Konto` und `Buchung`)
 * weiteres?
 
 Weitere Informationen
