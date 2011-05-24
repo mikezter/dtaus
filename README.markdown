@@ -44,7 +44,6 @@ konto_kunde = Dtaus::Konto.new(
   :bankname =>'Sparkasse'
 )
 buchung = Dtaus::Buchung.new(
-  :auftraggeber_konto => konto_auftraggeber,
   :kunden_konto => konto_kunde,
   :betrag => 39.99,
   :verwendungszweck => "Vielen Dank für Ihren Einkauf!"
