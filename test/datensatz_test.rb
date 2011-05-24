@@ -100,7 +100,7 @@ class DatensatzTest < Test::Unit::TestCase
   end
 
   def test_to_dta
-    dta = Dtaus::Datensatz.new(@konto_auftraggeber)
+    dta = Dtaus::Datensatz.new(@konto_auftraggeber, Date.parse('2011-05-23'))
     
     exception = assert_raise( Dtaus::DtausException ) do
       dta.to_dta
@@ -121,6 +121,59 @@ class DatensatzTest < Test::Unit::TestCase
                  "            0128E     0000001000000000000000000001"+
                  "234567890000000000123456780000000010000           "+
                  "                                        ", dta.to_dta
+  end
+  
+  def test_fuehrende_nullen
+    konto_s = Dtaus::Konto.new(
+      :kontonummer => "0034567890", 
+      :blz => 12345678, 
+      :kontoinhaber => 'Kunde', 
+      :bankname =>'Bank Name',
+      :kundennummer => "0099887766"
+    )
+    konto_auftraggeber_s = Dtaus::Konto.new(
+      :kontonummer => "0076543210", 
+      :blz => 12345678, 
+      :kontoinhaber => 'Auftraggeber', 
+      :bankname =>'Bank Name', 
+      :is_auftraggeber => true
+    )
+    buchung_s = Dtaus::Buchung.new(
+      :auftraggeber_konto => konto_auftraggeber_s,
+      :kunden_konto => konto_s,
+      :betrag => 100.0,
+      :verwendungszweck => "Vielen Dank für Ihren Einkauf!"
+    )
+    
+    dta_s = Dtaus::Datensatz.new(konto_auftraggeber_s)
+    dta_s.add(buchung_s)
+    
+    # kontonummern und kundennummern ohne führende nullen (integer)
+    konto_i = Dtaus::Konto.new(
+      :kontonummer => 34567890, 
+      :blz => 12345678, 
+      :kontoinhaber => 'Kunde', 
+      :bankname =>'Bank Name',
+      :kundennummer => 99887766
+    )
+    konto_auftraggeber_i = Dtaus::Konto.new(
+      :kontonummer => 76543210, 
+      :blz => 12345678, 
+      :kontoinhaber => 'Auftraggeber', 
+      :bankname =>'Bank Name', 
+      :is_auftraggeber => true
+    )
+    buchung_i = Dtaus::Buchung.new(
+      :auftraggeber_konto => konto_auftraggeber_i,
+      :kunden_konto => konto_i,
+      :betrag => 100.0,
+      :verwendungszweck => "Vielen Dank für Ihren Einkauf!"
+    )
+    
+    dta_i = Dtaus::Datensatz.new(konto_auftraggeber_i)
+    dta_i.add(buchung_i)
+    
+    assert_equal dta_s.to_dta, dta_i.to_dta
   end
   
 end
