@@ -2,6 +2,7 @@
 
 require 'date'
 require 'enumerator'
+require 'bigdecimal'
 
 require 'dtaus/datensatz'
 require 'dtaus/buchung'

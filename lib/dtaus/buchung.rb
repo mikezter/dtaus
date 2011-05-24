@@ -32,11 +32,26 @@ module Dtaus
       unless params[:auftraggeber_konto].is_a?(Konto)
         raise DtausException.new("Konto expected for Parameter 'auftraggeber_konto', got #{params[:auftraggeber_konto].class}")
       end
-      unless params[:betrag].is_a?(Float)
-        raise DtausException.new("Betrag is a #{params[:betrag].class}, expected Float")
+      
+      # betrag to BigDecimal
+      if params[:betrag].is_a? String
+        params[:betrag] = BigDecimal.new params[:betrag].sub(',', '.')
+      elsif params[:betrag].is_a? Numeric
+        params[:betrag] = BigDecimal.new params[:betrag].to_s
+      else
+        raise DtausException.new("Betrag is a #{params[:betrag].class}, expected String or Numeric")
       end
+      
+      # Betrag in Cent
+      params[:betrag] = ( params[:betrag] * 100 ).to_i
       if params[:betrag] == 0
-        raise DtausException.new("Betrag ist 0.0") 
+        raise DtausException.new("Betrag must not be 0.00 €!")
+      elsif params[:betrag] > 0
+        @betrag  = params[:betrag]
+        @positiv = true
+      else
+        @betrag  = params[:betrag] * -1
+        @positiv = false
       end
 
       @auftraggeber_konto = params[:auftraggeber_konto]
@@ -47,13 +62,6 @@ module Dtaus
         raise IncorrectSizeException.new("Zuviele Erweiterungen: #{erweiterungen.size}, maximal 15. Verwendungszweck zu lang?")
       end
 
-      @betrag = (params[:betrag] * 100).round.to_i  # Euro-Cent
-      if @betrag > 0
-        @positiv  = true
-      else
-        @betrag   = @betrag * -1 # only store positive amounts
-        @positiv  = false
-      end
     end
 
     # Art der Transaktion (5 Zeichen, 7a: 2 Zeichen, 7b: 3 Zeichen)

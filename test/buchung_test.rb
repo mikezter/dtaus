@@ -100,26 +100,77 @@ class BuchungTest < Test::Unit::TestCase
     assert_equal "Konto expected for Parameter 'kunden_konto', got Fixnum", exception.message
   end
   
+  def test_initialize_correct_betrag
+    booking = Dtaus::Buchung.new(
+      :auftraggeber_konto => @konto_auftraggeber,
+      :kunden_konto => @konto,
+      :betrag => 123,
+      :verwendungszweck => "Vielen Dank für Ihren Einkauf!"
+    )
+    assert_equal 12300, booking.betrag
+
+    booking = Dtaus::Buchung.new(
+      :auftraggeber_konto => @konto_auftraggeber,
+      :kunden_konto => @konto,
+      :betrag => 123.00,
+      :verwendungszweck => "Vielen Dank für Ihren Einkauf!"
+    )
+    assert_equal 12300, booking.betrag
+
+    booking = Dtaus::Buchung.new(
+      :auftraggeber_konto => @konto_auftraggeber,
+      :kunden_konto => @konto,
+      :betrag => 123.99,
+      :verwendungszweck => "Vielen Dank für Ihren Einkauf!"
+    )
+    assert_equal 12399, booking.betrag
+
+    booking = Dtaus::Buchung.new(
+      :auftraggeber_konto => @konto_auftraggeber,
+      :kunden_konto => @konto,
+      :betrag => BigDecimal("123.98"),
+      :verwendungszweck => "Vielen Dank für Ihren Einkauf!"
+    )
+    assert_equal 12398, booking.betrag
+
+    booking = Dtaus::Buchung.new(
+      :auftraggeber_konto => @konto_auftraggeber,
+      :kunden_konto => @konto,
+      :betrag => "123,85",
+      :verwendungszweck => "Vielen Dank für Ihren Einkauf!"
+    )
+    assert_equal 12385, booking.betrag
+
+    booking = Dtaus::Buchung.new(
+      :auftraggeber_konto => @konto_auftraggeber,
+      :kunden_konto => @konto,
+      :betrag => BigDecimal("0.019"),
+      :verwendungszweck => "Vielen Dank für Ihren Einkauf!"
+    )
+    assert_equal 001, booking.betrag
+
+  end
+  
   def test_initialize_incorrect_betrag
     exception = assert_raise( Dtaus::DtausException ) do
       Dtaus::Buchung.new(
         :auftraggeber_konto => @konto_auftraggeber,
         :kunden_konto => @konto,
-        :betrag => 100,
+        :betrag => "0.00",
         :verwendungszweck => "Vielen Dank für Ihren Einkauf!"
       )
     end
-    assert_equal "Betrag is a Fixnum, expected Float", exception.message
+    assert_equal "Betrag must not be 0.00 €!", exception.message
 
     exception = assert_raise( Dtaus::DtausException ) do
       Dtaus::Buchung.new(
         :auftraggeber_konto => @konto_auftraggeber,
         :kunden_konto => @konto,
-        :betrag => 0.0,
+        :betrag => 0,
         :verwendungszweck => "Vielen Dank für Ihren Einkauf!"
       )
     end
-    assert_equal "Betrag ist 0.0", exception.message
+    assert_equal "Betrag must not be 0.00 €!", exception.message
   end
 
   def test_initialize_incorrect_erweiterungen
