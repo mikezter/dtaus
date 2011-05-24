@@ -20,11 +20,9 @@ module Dtaus
 
     # Erstellt eine Erweiterung
     #
-    # _text ist ein String mit maximaler Länge von 27 Zeichen
-    # _type muss ein Symbol sein, aus :
-    # * :kunde
-    # * :verwendungszweck
-    # * :auftraggeber
+    # [<tt>_text</tt>] ist ein beliebig langer String
+    # [<tt>_type</tt>] muss ein Symbol sein, aus: 
+    #                  <tt>:kunde</tt>, <tt>:verwendungszweck</tt>, <tt>:auftraggeber</tt>
     #
     def initialize(_type, _text)
       unless TYPES.keys.include?(_type) or TYPES.values.include?(_type)
@@ -44,11 +42,9 @@ module Dtaus
     # Keine Erweiterungen werden erzeugt, wenn der <tt>_text</tt> vollständig
     # in das Standardfeld von 27 Zeichen passt.
     #
-    # <tt>_text::</tt> ist ein beliebig langer String
-    # <tt>_type::</tt> muss ein Symbol sein, aus:
-    # * <tt>:kunde</tt>
-    # * <tt>:verwendungszweck</tt>
-    # * <tt>:auftraggeber</tt>
+    # [<tt>_text</tt>] ist ein beliebig langer String
+    # [<tt>_type</tt>] muss ein Symbol sein, aus: 
+    #                  <tt>:kunde</tt>, <tt>:verwendungszweck</tt>, <tt>:auftraggeber</tt>
     #
     # returns: Array of Erweiterung
     def self.from_string(_type, _text)

@@ -11,9 +11,9 @@ module Dtaus
     # Vollständigen DTA-Datensatz erstellen
     #
     # Parameter:
-    # * _auftraggeber_konto, das Dtaus::Konto des Auftraggebers
-    # * _ausfuehrungsdatum, Auführungsdatum des Datensatzes,
-    #   optional, Default-Wert ist die aktuelle Zeit
+    # [<tt>_auftraggeber_konto</tt>] das Dtaus::Konto des Auftraggebers
+    # [<tt>_ausfuehrungsdatum</tt>] Ausführungsdatum des Datensatzes,
+    #                               _optional_, Default-Wert ist die aktuelle Zeit
     #
     def initialize(_auftraggeber_konto, _ausfuehrungsdatum = Time.now)
       unless _auftraggeber_konto.is_a?(Konto)
@@ -27,17 +27,9 @@ module Dtaus
       @auftraggeber_konto = _auftraggeber_konto
       @buchungen          = []
     end
-
-    # Art der Transaktionen (2 Zeichen)
-    #
-    # Zum Beispiel:
-    # * "LB" für Lastschriften Bankseitig
-    # * "LK" für Lastschriften Kundenseitig
-    # * "GB" für Gutschriften Bankseitig
-    # * "GK" für Gutschriften Kundenseitig
-    #
+    
     def typ
-     'LK'
+      'LK'
     end
 
     # Eine Buchung zum Datensatz hinzufügen.
@@ -61,8 +53,6 @@ module Dtaus
 
     # DTA-Repräsentation dieses Datensatzes
     #
-    # Header (A), Buchungen (C) und Footer (E) werden zusammengefügt
-    #
     def to_dta
       DtaGenerator.new(self).to_dta
     end
@@ -71,7 +61,7 @@ module Dtaus
     # Schreibt die DTAUS-Datei
     #
     # Parameter:
-    # * filename, Name der zu schreibenden Datei, Default-Wert ist <tt>DTAUS0.TXT</tt>
+    # [<tt>filename</tt>] Name der zu schreibenden Datei; _optional_, Default-Wert ist <tt>DTAUS0.TXT</tt>
     #
     def to_file(filename = 'DTAUS0.TXT')
       File.open(filename, 'w') do |file|

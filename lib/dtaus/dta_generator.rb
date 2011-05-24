@@ -2,12 +2,15 @@
 
 module Dtaus
   
+  # Baut den DTAUS Datensatz aus einem Dtaus::Datensatz Objekt
   class DtaGenerator
     
     def initialize(datensatz)
       @datensatz = datensatz
     end
     
+    # Header (A), Buchungen (C) und Footer (E) werden zusammengefügt
+    #
     def to_dta
       raise DtausException.new("Keine Buchungen vorhanden") unless @datensatz.buchungen.size > 0
       
@@ -18,11 +21,10 @@ module Dtaus
       dta
     end
     
-    # Erstellt A-Segment der DTAUS-Datei
-    # HEADER
-    #
+    # Erstellt A-Segment (HEADER) der DTAUS-Datei
+    #--
     # Aufbau des Segments:
-    #
+    # 
     # Nr. Start Länge     Beschreibung
     # 1   0     4 Zeichen   Länge des Datensatzes, immer 128 Bytes, also immer "0128"
     # 2   4     1 Zeichen   Datensatz-Typ, immer 'A'
@@ -44,7 +46,7 @@ module Dtaus
     # 12  127   1 Zeichen   Währungskennzeichen
     #             " " = DM
     #             "1" = Euro
-    #
+    #++
     # Insgesamt 128 Zeichen
     #
     def segment_a
@@ -136,8 +138,7 @@ module Dtaus
     end
     
     # Erstellt E-Segment (Prüfsummen) der DTAUS-Datei
-    # FOOTER
-    #
+    #--
     # Aufbau des Segments:
     #
     # Nr. Start Länge   Beschreibung
@@ -150,7 +151,7 @@ module Dtaus
     # 7   47  17 Zeichen  Kontrollsumme Bankleitzahlen
     # 8   64  13 Zeichen  Kontrollsumme Euro, nur belegt, wenn Euro als Währung angegeben wurde (A12, C17a)
     # 9   77  51 Zeichen  51 Blanks
-    #
+    #++
     # Insgesamt 128 Zeichen
     #
     def segment_e
