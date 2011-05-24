@@ -5,6 +5,7 @@ require 'enumerator'
 require 'bigdecimal'
 
 require 'dtaus/datensatz'
+require 'dtaus/dta_generator'
 require 'dtaus/buchung'
 require 'dtaus/konto'
 require 'dtaus/erweiterung'
