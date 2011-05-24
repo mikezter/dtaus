@@ -45,6 +45,9 @@ module Dtaus
       if @blz  == 0 or @blz.to_s.size > 8
         raise DtausException.new("Ungültige Bankleitzahl: #{@blz}")   
       end
+      if @kundennummer.to_s.size > 11
+        raise DtausException.new("Ungültige Kundennummer: #{@kundennummer}")   
+      end
       
     end
     

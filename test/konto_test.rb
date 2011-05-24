@@ -48,14 +48,14 @@ class KontoTest < Test::Unit::TestCase
       :kontoinhaber => 'Inhaber', 
       :bankname =>'Bank Name',
       :is_auftraggeber => false,
-      :kundennummer => 12345
+      :kundennummer => "KDNR12345678901"
     )
     assert_equal 1234567890, konto.kontonummer
     assert_equal 12345678, konto.blz
     assert_equal 'INHABER', konto.kontoinhaber
     assert_equal 'BANK NAME', konto.bankname
     assert_equal false, konto.is_auftraggeber?
-    assert_equal 12345, konto.kundennummer
+    assert_equal 12345678901, konto.kundennummer
   end
 
   def test_initialize_missing_parameters
@@ -143,6 +143,30 @@ class KontoTest < Test::Unit::TestCase
       )
     end
     assert_equal "Ungültige Bankleitzahl: 0", exception.message
+  end
+  
+  def test_initialize_incorrect_kundennummer
+    exception = assert_raise( Dtaus::DtausException ) do
+      Dtaus::Konto.new(
+        :kontonummer => 1234567890, 
+        :blz => 12345678, 
+        :kontoinhaber => 'Inhaber', 
+        :bankname => 'Bank Name',
+        :kundennummer => "KDNR123456789012"
+      )
+    end
+    assert_equal "Ungültige Kundennummer: 123456789012", exception.message
+
+    exception = assert_raise( Dtaus::DtausException ) do
+      Dtaus::Konto.new(
+        :kontonummer => 1234567890, 
+        :blz => 12345678, 
+        :kontoinhaber => 'Inhaber', 
+        :bankname => 'Bank Name',
+        :kundennummer => 123456789012
+      )
+    end
+    assert_equal "Ungültige Kundennummer: 123456789012", exception.message
   end
   
   def test_erweiterungen
