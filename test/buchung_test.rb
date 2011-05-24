@@ -71,6 +71,19 @@ class BuchungTest < Test::Unit::TestCase
 
   end
   
+  def test_initialize_incorrect_transaktionstyp
+    exception = assert_raise( Dtaus::DtausException ) do
+      Dtaus::Buchung.new(
+        :auftraggeber_konto => @konto_auftraggeber,
+        :kunden_konto => @konto,
+        :betrag => 100.0,
+        :transaktionstyp => :xxx,
+        :verwendungszweck => "Vielen Dank für Ihren Einkauf!"
+      )
+    end
+    assert_equal "Transaktionstyp has to be one of [:lastschrift, :gutschrift]", exception.message
+  end
+
   def test_initialize_incorrect_konto
     exception = assert_raise( Dtaus::DtausException ) do
       Dtaus::Buchung.new(

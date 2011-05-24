@@ -5,17 +5,23 @@ module Dtaus
   # Vollständiger DTA-Datensatz mit Header (A), Body (C) und Footer (E)
   class Datensatz
 
-    attr_reader :auftraggeber_konto, :buchungen, :ausfuehrungsdatum, :positiv
+    attr_reader :auftraggeber_konto, :buchungen, :ausfuehrungsdatum, :positiv, :transaktionstyp
     alias :positiv? :positiv
 
     # Vollständigen DTA-Datensatz erstellen
     #
     # Parameter:
+    # [<tt>_transaktionstyp</tt>] Art der Transaktionen (als :Symbol)
+    #                             * <tt>:lastschrift</tt> für Lastschriften Kundenseitig
+    #                             * <tt>:gutschrift</tt> für Gutschriften Kundenseitig
     # [<tt>_auftraggeber_konto</tt>] das Dtaus::Konto des Auftraggebers
     # [<tt>_ausfuehrungsdatum</tt>] Ausführungsdatum des Datensatzes,
     #                               _optional_, Default-Wert ist die aktuelle Zeit
     #
-    def initialize(_auftraggeber_konto, _ausfuehrungsdatum = Time.now)
+    def initialize(_transaktionstyp, _auftraggeber_konto, _ausfuehrungsdatum = Time.now)
+      unless [:lastschrift, :gutschrift].include?(_transaktionstyp)
+        raise DtausException.new("Transaktionstyp has to be one of [:lastschrift, :gutschrift]") 
+      end
       unless _auftraggeber_konto.is_a?(Konto)
         raise DtausException.new("Konto expected, got #{_auftraggeber_konto.class}") 
       end
@@ -23,13 +29,10 @@ module Dtaus
         raise DtausException.new("Date or Time expected, got #{_ausfuehrungsdatum.class}") 
       end
 
-      @ausfuehrungsdatum  = _ausfuehrungsdatum
+      @transaktionstyp    = _transaktionstyp
       @auftraggeber_konto = _auftraggeber_konto
+      @ausfuehrungsdatum  = _ausfuehrungsdatum
       @buchungen          = []
-    end
-    
-    def typ
-      'LK'
     end
 
     # Eine Buchung zum Datensatz hinzufügen.

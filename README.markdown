@@ -27,6 +27,7 @@ In Ruby:
 ``` ruby
 require 'dtaus'
 
+# Konto des Auftraggebers
 konto_auftraggeber = Dtaus::Konto.new(
   :kontonummer => 1234567890, 
   :blz => 82070024, 
@@ -34,8 +35,12 @@ konto_auftraggeber = Dtaus::Konto.new(
   :bankname =>'Deutsche Bank',
   :is_auftraggeber => true
 )
-dta = Dtaus::Datensatz.new(konto_auftraggeber)
 
+# LASTSCHRIFT
+# Erstellen eines Datensatzes für eine Lastschrift
+lastschrift = Dtaus::Datensatz.new(:lastschrift, konto_auftraggeber)
+
+# Konto des Kunden
 konto_kunde = Dtaus::Konto.new(
   :kontonummer => 1234567890, 
   :blz => 12030000, 
@@ -43,15 +48,17 @@ konto_kunde = Dtaus::Konto.new(
   :bankname =>'Sparkasse',
   :kundennummer => 77777777777
 )
+# Lastschrift-Buchung für den Kunden
 buchung = Dtaus::Buchung.new(
   :kunden_konto => konto_kunde,
   :betrag => "9,99",
+  :transaktionstyp => :lastschrift,
   :verwendungszweck => "Vielen Dank für Ihren Einkauf!"
 )
-dta.add(buchung)
+lastschrift.add(buchung)
 
-dta.to_file
-puts dta
+lastschrift.to_file
+puts lastschrift
 ```
 
 Siehe: [example/example.rb](https://github.com/alphaone/dtaus/blob/master/example/example.rb)
@@ -59,14 +66,8 @@ Siehe: [example/example.rb](https://github.com/alphaone/dtaus/blob/master/exampl
 Einschränkungen:
 ----------------
 
-* Es sind nur Lastschriften möglich. __Typ der Datei ist LK__ (Lastschrift Kunde).
+* Es sind nur Lastschriften und Gutschriften möglich. __Typ der Datei ist LK oder GK__ (Lastschrift-Kunde oder Gutschrift-Kunde).
 * Auftraggeber, Empfänger und Verwendungszweck können jeweils 27 Zeichen enthalten. Es stehen 15 Erweiterungen à 27 Zeichen zur Verfügung. Jede Erweiterung kann entweder Auftraggeber, Empfänger oder Verwendungszweck erweitern.
-
-Todo:
-------
-
-* Gutschriften ermöglichen
-* weiteres?
 
 Weitere Informationen
 ---------------------

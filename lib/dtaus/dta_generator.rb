@@ -52,7 +52,7 @@ module Dtaus
     def segment_a
       result = '0128'                                                     #  4 Zeichen  Länge des Datensatzes, immer 128 Bytes, also immer "0128"
       result += 'A'                                                       #  1 Zeichen  Datensatz-Typ, immer 'A'
-      result += @datensatz.typ                                            #  2 Zeichen  Art der Transaktionen
+      result += segment_a_transaktionstyp(@datensatz.transaktionstyp)     #  2 Zeichen  Art der Transaktionen
       result += '%8i' % @datensatz.auftraggeber_konto.blz                 #  8 Zeichen  Bankleitzahl des Auftraggebers
       result += '%08i' % 0                                                #  8 Zeichen  CST, "00000000", nur belegt, wenn Diskettenabsender Kreditinstitut
       result += '%-27.27s' % @datensatz.auftraggeber_konto.kontoinhaber   # 27 Zeichen  Name des Auftraggebers
@@ -93,11 +93,11 @@ module Dtaus
       result += '%08i' % buchung.kunden_konto.blz                    #  8 Zeichen  Bankleitzahl des Kunden
       result += '%010i' % buchung.kunden_konto.kontonummer           # 10 Zeichen  Kontonummer des Kunden
       result += '0%011i0' % buchung.kunden_konto.kundennummer        # 13 Zeichen  Verschiedenes 1. Zeichen: "0" 2. - 12. Zeichen: interne Kundennummer oder Nullen 13. Zeichen: "0"
-      result += buchung.zahlungsart                                  #  5 Zeichen  Art der Transaktion (7a: 2 Zeichen, 7b: 3 Zeichen)
+      result += segment_c_transaktionstyp(buchung.transaktionstyp)   #  5 Zeichen  Art der Transaktion (7a: 2 Zeichen, 7b: 3 Zeichen)
       result += ' '                                                  #  1 Zeichen  Reserviert, " " (Blank)
       result += '0' * 11                                             # 11 Zeichen  Betrag
-      result += '%08i' % @datensatz.auftraggeber_konto.blz              #  8 Zeichen  Bankleitzahl des Auftraggebers
-      result += '%010i' % @datensatz.auftraggeber_konto.kontonummer     # 10 Zeichen  Kontonummer des Auftraggebers
+      result += '%08i' % @datensatz.auftraggeber_konto.blz           #  8 Zeichen  Bankleitzahl des Auftraggebers
+      result += '%010i' % @datensatz.auftraggeber_konto.kontonummer  # 10 Zeichen  Kontonummer des Auftraggebers
       result += '%011i' % buchung.betrag                             # 11 Zeichen  Betrag in Euro einschließlich Nachkommastellen, nur belegt, wenn Euro als Währung angegeben wurde
       result += ' ' * 3                                              #  3 Zeichen  Reserviert, 3 Blanks
       result += buchung.kunden_konto.kontoinhaber[0..26].ljust(27)   # 27 Zeichen  Name des Kunden
@@ -190,6 +190,28 @@ module Dtaus
       @datensatz.buchungen.inject(0) {|sum, buchung| sum += buchung.betrag}
     end
 
+    def segment_a_transaktionstyp(symbol)
+      case symbol
+      when :lastschrift
+        'LK'
+      when :gutschrift
+        'GK'
+      else
+        raise Exception.new("Unknown transaktionstyp #{symbol}.")
+      end
+    end
+    
+    def segment_c_transaktionstyp(symbol)
+      case symbol
+      when :lastschrift
+        '05000'
+      when :gutschrift
+        '51000'
+      else
+        raise Exception.new("Unknown transaktionstyp #{symbol}.")
+      end
+    end
+    
   end
   
 end
