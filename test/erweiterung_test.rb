@@ -27,19 +27,16 @@ class ErweiterungTest < Test::Unit::TestCase
   
   def test_from_string
     erweiterungen = Dtaus::Erweiterung.from_string(:kunde, 'sehr langer text sehr langer text sehr langer text')
-    assert_equal 2, erweiterungen.size
-    assert_equal 'SEHR LANGER TEXT SEHR LANGE', erweiterungen[0].text
-    assert_equal 'R TEXT SEHR LANGER TEXT    ', erweiterungen[1].text
+    assert_equal 1, erweiterungen.size
+    assert_equal 'R TEXT SEHR LANGER TEXT    ', erweiterungen[0].text
 
     erweiterungen = Dtaus::Erweiterung.from_string(:kunde, 'kurzer text')
-    assert_equal 1, erweiterungen.size
-    assert_equal 'KURZER TEXT                ', erweiterungen[0].text
+    assert_equal 0, erweiterungen.size
 
     erweiterungen = Dtaus::Erweiterung.from_string(:kunde, 'längerer text mit ümläuten. ßÄÖÜ und trotzdem wird korrekt getrennt')
-    assert_equal 3, erweiterungen.size
-    assert_equal 'LAENGERER TEXT MIT UEMLAEUT', erweiterungen[0].text
-    assert_equal 'EN. SSAEOEUE UND TROTZDEM W', erweiterungen[1].text
-    assert_equal 'IRD KORREKT GETRENNT       ', erweiterungen[2].text
+    assert_equal 2, erweiterungen.size
+    assert_equal 'EN. SSAEOEUE UND TROTZDEM W', erweiterungen[0].text
+    assert_equal 'IRD KORREKT GETRENNT       ', erweiterungen[1].text
   end
 
 end

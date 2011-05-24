@@ -149,7 +149,8 @@ class KontoTest < Test::Unit::TestCase
     konto = Dtaus::Konto.new(
       :kontonummer => 1234567890, 
       :blz => 12345678, 
-      :kontoinhaber => 'Sehr laaaaaanger Inhaber Name GmbH', 
+      :kontoinhaber => 'Sehr laaaaaanger Inhaber Name kaum zu ' + 
+                       'glauben wie lang der tatsächlich ist GmbH', 
       :bankname =>'Bank Name',
       :is_auftraggeber => true,
       :kundennummer => 12345
@@ -158,9 +159,9 @@ class KontoTest < Test::Unit::TestCase
     erw = konto.erweiterungen
     assert erw, "Erweiterungen eines Auftraggeberkontos"
     assert_equal 2, erw.size
-    assert_equal "SEHR LAAAAAANGER INHABER NA", erw[0].text
+    assert_equal "ME KAUM ZU GLAUBEN WIE LANG", erw[0].text
     assert_equal '03', erw[0].type
-    assert_equal "ME GMBH                    ", erw[1].text
+    assert_equal "DER TATSAECHLICH IST GMBH  ", erw[1].text
     assert_equal '03', erw[1].type
     
     konto = Dtaus::Konto.new(
@@ -172,11 +173,9 @@ class KontoTest < Test::Unit::TestCase
     
     erw = konto.erweiterungen
     assert erw, "Erweiterungen eines Kundenkontos"
-    assert_equal 2, erw.size
-    assert_equal "SEHR LAAAAAANGER INHABER NA", erw[0].text
+    assert_equal 1, erw.size
+    assert_equal "ME                         ", erw[0].text
     assert_equal '01', erw[0].type
-    assert_equal "ME                         ", erw[1].text
-    assert_equal '01', erw[1].type
     
   end
 

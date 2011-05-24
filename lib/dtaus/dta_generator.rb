@@ -72,7 +72,64 @@ module Dtaus
       result = ''
       
       @datensatz.buchungen.each do |buchung|
-        result += buchung.to_dta
+        result += segment_c_buchung(buchung)
+        result += segment_c_erweiterungen(buchung)
+      end
+      
+      result
+    end
+    
+    # Erstellt ein C-Segments für eine Buchung
+    #
+    def segment_c_buchung(buchung)
+      # Länge des DTA-Datensatzes
+      erweiterungen = buchung.erweiterungen + @datensatz.auftraggeber_konto.erweiterungen
+      
+      result  = '%04i' % (187 + erweiterungen.size * 29)             #  4 Zeichen  Länge des Datensatzes, 187 + x * 29 (x..Anzahl Erweiterungsteile)
+      result += 'C'                                                  #  1 Zeichen  Datensatz-Typ, immer 'C'
+      result += '%08i' % 0                                           #  8 Zeichen  Bankleitzahl des Auftraggebers (optional)
+      result += '%08i' % buchung.kunden_konto.blz                    #  8 Zeichen  Bankleitzahl des Kunden
+      result += '%010i' % buchung.kunden_konto.kontonummer           # 10 Zeichen  Kontonummer des Kunden
+      result += '0%011i0' % buchung.kunden_konto.kundennummer        # 13 Zeichen  Verschiedenes 1. Zeichen: "0" 2. - 12. Zeichen: interne Kundennummer oder Nullen 13. Zeichen: "0"
+      result += buchung.zahlungsart                                  #  5 Zeichen  Art der Transaktion (7a: 2 Zeichen, 7b: 3 Zeichen)
+      result += ' '                                                  #  1 Zeichen  Reserviert, " " (Blank)
+      result += '0' * 11                                             # 11 Zeichen  Betrag
+      result += '%08i' % @datensatz.auftraggeber_konto.blz              #  8 Zeichen  Bankleitzahl des Auftraggebers
+      result += '%010i' % @datensatz.auftraggeber_konto.kontonummer     # 10 Zeichen  Kontonummer des Auftraggebers
+      result += '%011i' % buchung.betrag                             # 11 Zeichen  Betrag in Euro einschließlich Nachkommastellen, nur belegt, wenn Euro als Währung angegeben wurde
+      result += ' ' * 3                                              #  3 Zeichen  Reserviert, 3 Blanks
+      result += buchung.kunden_konto.kontoinhaber[0..26].ljust(27)   # 27 Zeichen  Name des Kunden
+      result +=  ' ' * 8                                             #  8 Zeichen  Reserviert, 8 Blanks
+      
+      if result.size != 128
+        raise IncorrectSizeException.new("C-Segement 1: #{result.size} Zeichen, 128 erwartet (#{buchung.kunden_konto.kontoinhaber})")
+      end
+      
+      result
+    end
+    
+    # Erstellt den Erweiterungen-Teil des C-Segments für diese Buchung
+    #
+    def segment_c_erweiterungen(buchung)
+      erweiterungen = buchung.erweiterungen + @datensatz.auftraggeber_konto.erweiterungen
+      
+      result  = @datensatz.auftraggeber_konto.kontoinhaber[0..26].ljust(27)   # 27 Zeichen  Name des Auftraggebers
+      result += buchung.verwendungszweck[0..26].ljust(27)                     # 27 Zeichen  Verwendungszweck
+      result += '1'                                                           # 1 Zeichen  Währungskennzeichen ('1' = Euro)
+      result += '  '                                                          # 2 Zeichen   Reserviert, 2 Blanks
+      result += "%02i" % erweiterungen.size                                   # 2 Zeichen   Anzahl der Erweiterungsdatensätze, "00" bis "15"
+      
+      result += erweiterungen[0..1].inject('') {|tmp, erweiterung| tmp += "#{erweiterung.type}#{erweiterung.text}"}
+      result  = result.ljust(128)
+      
+      if erweiterungen.size > 2
+        erweiterungen[2..-1].each_slice(4) do |slice|
+          result += slice.inject('') {|tmp, erweiterung| tmp += "#{erweiterung.type}#{erweiterung.text}"}.ljust(128)
+        end
+      end
+      
+      if result.size > 256 * 3 or result.size % 128 != 0
+        raise IncorrectSizeException.new("Erweiterungen: #{result.size} Zeichen") 
       end
       
       result

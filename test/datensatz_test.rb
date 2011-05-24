@@ -108,19 +108,14 @@ class DatensatzTest < Test::Unit::TestCase
     assert_equal "Keine Buchungen vorhanden", exception.message
     
     dta.add(@buchung)
-    assert_equal "0128ALK1234567800000000AUFTRAGGEBER               "+
-                 "230511    98765432100000000000               23052"+
-                 "011                        10303C00000000123456781"+
-                 "234567890000000000000005000 0000000000012345678987"+
-                 "654321000000010000   KUNDE                        "+
-                 "      AUFTRAGGEBER               VIELEN DANK FUER "+
-                 "IHREN EINK1  0401KUNDE                      03AUFT"+
-                 "RAGGEBER                          02VIELEN DANK FU"+
-                 "ER IHREN EINK02AUF!                               "+
-                 "                                                  "+
-                 "            0128E     0000001000000000000000000001"+
-                 "234567890000000000123456780000000010000           "+
-                 "                                        ", dta.to_dta
+    assert_equal \
+      "0128ALK1234567800000000AUFTRAGGEBER               230511    9876543210000"+
+      "0000000               23052011                        10216C0000000012345"+
+      "6781234567890000000000000005000 0000000000012345678987654321000000010000 "+
+      "  KUNDE                              AUFTRAGGEBER               VIELEN DA"+
+      "NK FUER IHREN EINK1  0102AUF!                                            "+
+      "                   0128E     00000010000000000000000000012345678900000000"+
+      "00123456780000000010000                                                   ", dta.to_dta
   end
   
   def test_fuehrende_nullen
