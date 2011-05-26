@@ -3,12 +3,12 @@
 module DTAUS
   
   # Generische Exception für Dtaus
-  class DtausException < Exception; end;
+  class DTAUSException < Exception; end;
 
   # Exception für zu lange oder zu kurze DTA-Teile
-  class IncorrectSizeException < DtausException; end;
+  class IncorrectSizeException < DTAUSException; end;
   
   # Exception für falsch übergebene Typen bei Erweiterungen
-  class IncorrectErweiterungTypeException < DtausException; end;
+  class IncorrectErweiterungTypeException < DTAUSException; end;
   
 end

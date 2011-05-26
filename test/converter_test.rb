@@ -19,12 +19,12 @@ class ConverterTest < Test::Unit::TestCase
   end
 
   def test_convert_number_incorrect_class
-    exception = assert_raise( DTAUS::DtausException ) do
+    exception = assert_raise( DTAUS::DTAUSException ) do
       DTAUS::Converter.convert_number(123.45)
     end
     assert_equal "Cannot convert Float to Integer", exception.message
 
-    exception = assert_raise( DTAUS::DtausException ) do
+    exception = assert_raise( DTAUS::DTAUSException ) do
       DTAUS::Converter.convert_number({:number => 123})
     end
     assert_equal "Cannot convert Hash to Integer", exception.message

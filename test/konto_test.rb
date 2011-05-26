@@ -102,7 +102,7 @@ class KontoTest < Test::Unit::TestCase
   end
   
   def test_initialize_incorrect_kontonummer
-    exception = assert_raise( DTAUS::DtausException ) do
+    exception = assert_raise( DTAUS::DTAUSException ) do
       DTAUS::Konto.new(
         :kontonummer => 12345678901, 
         :blz => 12345678, 
@@ -112,7 +112,7 @@ class KontoTest < Test::Unit::TestCase
     end
     assert_equal "Ungültige Kontonummer: 12345678901", exception.message
 
-    exception = assert_raise( DTAUS::DtausException ) do
+    exception = assert_raise( DTAUS::DTAUSException ) do
       DTAUS::Konto.new(
         :kontonummer => 0, 
         :blz => 12345678, 
@@ -124,7 +124,7 @@ class KontoTest < Test::Unit::TestCase
   end
   
   def test_initialize_incorrect_blz
-    exception = assert_raise( DTAUS::DtausException ) do
+    exception = assert_raise( DTAUS::DTAUSException ) do
       DTAUS::Konto.new(
         :kontonummer => 1234567890, 
         :blz => 123456789, 
@@ -134,7 +134,7 @@ class KontoTest < Test::Unit::TestCase
     end
     assert_equal "Ungültige Bankleitzahl: 123456789", exception.message
 
-    exception = assert_raise( DTAUS::DtausException ) do
+    exception = assert_raise( DTAUS::DTAUSException ) do
       DTAUS::Konto.new(
         :kontonummer => 1234567890, 
         :blz => 0, 
@@ -146,7 +146,7 @@ class KontoTest < Test::Unit::TestCase
   end
   
   def test_initialize_incorrect_kundennummer
-    exception = assert_raise( DTAUS::DtausException ) do
+    exception = assert_raise( DTAUS::DTAUSException ) do
       DTAUS::Konto.new(
         :kontonummer => 1234567890, 
         :blz => 12345678, 
@@ -157,7 +157,7 @@ class KontoTest < Test::Unit::TestCase
     end
     assert_equal "Ungültige Kundennummer: 123456789012", exception.message
 
-    exception = assert_raise( DTAUS::DtausException ) do
+    exception = assert_raise( DTAUS::DTAUSException ) do
       DTAUS::Konto.new(
         :kontonummer => 1234567890, 
         :blz => 12345678, 

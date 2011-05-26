@@ -31,10 +31,10 @@ module DTAUS
       end
 
       unless params[:kunden_konto].is_a?(Konto)
-        raise DtausException.new("Konto expected for Parameter 'kunden_konto', got #{params[:kunden_konto].class}")
+        raise DTAUSException.new("Konto expected for Parameter 'kunden_konto', got #{params[:kunden_konto].class}")
       end
       unless [:lastschrift, :gutschrift].include?(params[:transaktionstyp])
-        raise DtausException.new("Transaktionstyp has to be one of [:lastschrift, :gutschrift]")
+        raise DTAUSException.new("Transaktionstyp has to be one of [:lastschrift, :gutschrift]")
       end
 
       # betrag to BigDecimal
@@ -43,13 +43,13 @@ module DTAUS
       elsif params[:betrag].is_a? Numeric
         params[:betrag] = BigDecimal.new params[:betrag].to_s
       else
-        raise DtausException.new("Betrag is a #{params[:betrag].class}, expected String or Numeric")
+        raise DTAUSException.new("Betrag is a #{params[:betrag].class}, expected String or Numeric")
       end
 
       # Betrag in Cent
       params[:betrag] = ( params[:betrag] * 100 ).to_i
       if params[:betrag] == 0
-        raise DtausException.new("Betrag must not be 0.00 €!")
+        raise DTAUSException.new("Betrag must not be 0.00 €!")
       elsif params[:betrag] > 0
         @betrag  = params[:betrag]
         @positiv = true

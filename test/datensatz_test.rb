@@ -53,21 +53,21 @@ class DatensatzTest < Test::Unit::TestCase
   end
 
   def test_initialize_incorrect_transaktionstyp
-    exception = assert_raise( DTAUS::DtausException ) do
+    exception = assert_raise( DTAUS::DTAUSException ) do
       DTAUS::Datensatz.new(:xxx, @konto_auftraggeber)
     end
     assert_equal "Transaktionstyp has to be one of [:lastschrift, :gutschrift]", exception.message
   end
 
   def test_initialize_incorrect_auftraggeber
-    exception = assert_raise( DTAUS::DtausException ) do
+    exception = assert_raise( DTAUS::DTAUSException ) do
       DTAUS::Datensatz.new(:lastschrift, '0123456789')
     end
     assert_equal "Konto expected, got String", exception.message
   end
 
   def test_initialize_incorrect_datetime
-    exception = assert_raise( DTAUS::DtausException ) do
+    exception = assert_raise( DTAUS::DTAUSException ) do
       DTAUS::Datensatz.new(:lastschrift, @konto_auftraggeber, 2011)
     end
     assert_equal "Date or Time expected, got Fixnum", exception.message
@@ -90,7 +90,7 @@ class DatensatzTest < Test::Unit::TestCase
   def test_add_incorrect_buchung
     dta = DTAUS::Datensatz.new(:lastschrift, @konto_auftraggeber)
 
-    exception = assert_raise( DTAUS::DtausException ) do
+    exception = assert_raise( DTAUS::DTAUSException ) do
       dta.add("buchung")
     end
     assert_equal "Buchung expected, got String", exception.message
@@ -103,7 +103,7 @@ class DatensatzTest < Test::Unit::TestCase
     dta.add(@buchung)
     assert_equal true, dta.positiv?
 
-    exception = assert_raise( DTAUS::DtausException ) do
+    exception = assert_raise( DTAUS::DTAUSException ) do
       dta.add(@buchung_negativ)
     end
     assert_equal "Nicht erlaubter Vorzeichenwechsel! Buchung muss wie die vorherigen Buchungen positiv sein!", exception.message
@@ -112,7 +112,7 @@ class DatensatzTest < Test::Unit::TestCase
   def test_to_dta
     dta = DTAUS::Datensatz.new(:lastschrift, @konto_auftraggeber, Date.parse('2011-05-23'))
     
-    exception = assert_raise( DTAUS::DtausException ) do
+    exception = assert_raise( DTAUS::DTAUSException ) do
       dta.to_dta
     end
     assert_equal "Keine Buchungen vorhanden", exception.message

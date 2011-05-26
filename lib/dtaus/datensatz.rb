@@ -20,13 +20,13 @@ module DTAUS
     #
     def initialize(_transaktionstyp, _auftraggeber_konto, _ausfuehrungsdatum = Time.now)
       unless [:lastschrift, :gutschrift].include?(_transaktionstyp)
-        raise DtausException.new("Transaktionstyp has to be one of [:lastschrift, :gutschrift]") 
+        raise DTAUSException.new("Transaktionstyp has to be one of [:lastschrift, :gutschrift]") 
       end
       unless _auftraggeber_konto.is_a?(Konto)
-        raise DtausException.new("Konto expected, got #{_auftraggeber_konto.class}") 
+        raise DTAUSException.new("Konto expected, got #{_auftraggeber_konto.class}") 
       end
       unless _ausfuehrungsdatum.is_a?(Date) or _ausfuehrungsdatum.is_a?(Time)
-        raise DtausException.new("Date or Time expected, got #{_ausfuehrungsdatum.class}") 
+        raise DTAUSException.new("Date or Time expected, got #{_ausfuehrungsdatum.class}") 
       end
 
       @transaktionstyp    = _transaktionstyp
@@ -40,14 +40,14 @@ module DTAUS
     # Es wird geprüft, ob das Vorzeichen identisch mit den bisherigen Vorzeichen ist.
     #
     def add(_buchung)
-      raise DtausException.new("Buchung expected, got #{_buchung.class}") unless _buchung.is_a?(Buchung)
+      raise DTAUSException.new("Buchung expected, got #{_buchung.class}") unless _buchung.is_a?(Buchung)
       
       # Die erste Buchung bestimmt, ob alle Beträge positiv oder negativ sind.
       @positiv = _buchung.positiv? if @buchungen.empty?
       
       # Wirf Exception wenn Vorzeichen gemischt werden
       unless @positiv == _buchung.positiv?
-        raise DtausException.new("Nicht erlaubter Vorzeichenwechsel! "+
+        raise DTAUSException.new("Nicht erlaubter Vorzeichenwechsel! "+
                                  "Buchung muss wie die vorherigen Buchungen #{positiv? ? 'positiv' : 'negativ'} sein!")
       end
       

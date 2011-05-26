@@ -12,7 +12,7 @@ module DTAUS
     # Header (A), Buchungen (C) und Footer (E) werden zusammengefügt
     #
     def to_dta
-      raise DtausException.new("Keine Buchungen vorhanden") unless @datensatz.buchungen.size > 0
+      raise DTAUSException.new("Keine Buchungen vorhanden") unless @datensatz.buchungen.size > 0
       
       dta = segment_a + segment_c + segment_e
       

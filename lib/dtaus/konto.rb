@@ -40,13 +40,13 @@ module DTAUS
       @bankname     = Converter.convert_text(params[:bankname])
 
       if @kontonummer == 0 or @kontonummer.to_s.size > 10
-        raise DtausException.new("Ungültige Kontonummer: #{@kontonummer}") 
+        raise DTAUSException.new("Ungültige Kontonummer: #{@kontonummer}") 
       end
       if @blz  == 0 or @blz.to_s.size > 8
-        raise DtausException.new("Ungültige Bankleitzahl: #{@blz}")   
+        raise DTAUSException.new("Ungültige Bankleitzahl: #{@blz}")   
       end
       if @kundennummer.to_s.size > 11
-        raise DtausException.new("Ungültige Kundennummer: #{@kundennummer}")   
+        raise DTAUSException.new("Ungültige Kundennummer: #{@kundennummer}")   
       end
       
     end

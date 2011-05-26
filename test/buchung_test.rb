@@ -72,7 +72,7 @@ class BuchungTest < Test::Unit::TestCase
   end
   
   def test_initialize_incorrect_transaktionstyp
-    exception = assert_raise( DTAUS::DtausException ) do
+    exception = assert_raise( DTAUS::DTAUSException ) do
       DTAUS::Buchung.new(
         :auftraggeber_konto => @konto_auftraggeber,
         :kunden_konto => @konto,
@@ -85,7 +85,7 @@ class BuchungTest < Test::Unit::TestCase
   end
 
   def test_initialize_incorrect_konto
-    exception = assert_raise( DTAUS::DtausException ) do
+    exception = assert_raise( DTAUS::DTAUSException ) do
       DTAUS::Buchung.new(
         :auftraggeber_konto => @konto_auftraggeber,
         :kunden_konto => 123456789,
@@ -142,7 +142,7 @@ class BuchungTest < Test::Unit::TestCase
   end
   
   def test_initialize_incorrect_betrag
-    exception = assert_raise( DTAUS::DtausException ) do
+    exception = assert_raise( DTAUS::DTAUSException ) do
       DTAUS::Buchung.new(
         :kunden_konto => @konto,
         :betrag => "0.00",
@@ -151,7 +151,7 @@ class BuchungTest < Test::Unit::TestCase
     end
     assert_equal "Betrag must not be 0.00 €!", exception.message
 
-    exception = assert_raise( DTAUS::DtausException ) do
+    exception = assert_raise( DTAUS::DTAUSException ) do
       DTAUS::Buchung.new(
         :kunden_konto => @konto,
         :betrag => 0,

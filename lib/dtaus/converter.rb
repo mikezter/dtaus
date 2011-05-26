@@ -28,7 +28,7 @@ module DTAUS
       case _number
         when Integer then _number
         when String then _number.strip.gsub(/\D/, '').to_i
-        else raise DtausException.new("Cannot convert #{_number.class} to Integer")
+        else raise DTAUSException.new("Cannot convert #{_number.class} to Integer")
       end
     end
     
