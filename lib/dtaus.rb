@@ -90,13 +90,12 @@ class DTAUS
   def self.convert_text(_text)
     tmp = _text.to_s.dup
     tmp = tmp.upcase()
-    tmp = tmp.gsub('Ä', 'AE')
-    tmp = tmp.gsub('Ü', 'UE')
-    tmp = tmp.gsub('Ö', 'OE')
-    tmp = tmp.gsub('ä', 'AE')
-    tmp = tmp.gsub('ü', 'UE')
-    tmp = tmp.gsub('ö', 'OE')
-    tmp = tmp.gsub('ß', 'SS')
+    tmp.gsub!(/[Ää]/, 'AE')
+    tmp.gsub!(/[Öö]/, 'OE')
+    tmp.gsub!(/[Üü]/, 'UE')
+    tmp.gsub!(/ß/, 'SS')
+    tmp.gsub!(/[^\ \.\,\&\-\/\+\*\$\%]/, '')
+
     tmp = tmp.strip
   end
 
