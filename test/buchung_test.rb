@@ -1,16 +1,18 @@
+# encoding: utf-8
+
 require File.expand_path(File.dirname(__FILE__) + "/test_helper")
 
 class BuchungTest < Test::Unit::TestCase
 
   def setup
     @konto = DTAUS::Konto.new(
-      :kontonummer => 1234567890, 
-      :blz => 12345678, 
-      :kontoinhaber => 'Kunde', 
+      :kontonummer => 1234567890,
+      :blz => 12345678,
+      :kontoinhaber => 'Kunde',
       :bankname =>'Bank Name'
     )
   end
-        
+
   def test_initialize
     buchung = DTAUS::Buchung.new(
       :kunden_konto => @konto,
@@ -34,11 +36,11 @@ class BuchungTest < Test::Unit::TestCase
     assert_equal 10000, buchung.betrag
     assert_equal false, buchung.positiv?
     assert_equal "VIELEN DANK FUER IHREN EINKAUF!", buchung.verwendungszweck
-    
+
     konto = DTAUS::Konto.new(
-      :kontonummer => 1234567890, 
-      :blz => 12345678, 
-      :kontoinhaber => 'Sehr laaaaaaanger Kundenname GmbH', 
+      :kontonummer => 1234567890,
+      :blz => 12345678,
+      :kontoinhaber => 'Sehr laaaaaaanger Kundenname GmbH',
       :bankname =>'Bank Name'
     )
     buchung = DTAUS::Buchung.new(
@@ -49,7 +51,7 @@ class BuchungTest < Test::Unit::TestCase
     assert buchung, "Buchung kann mit langem Kundennamen angelegt werden"
     assert_equal 2, buchung.erweiterungen.size
   end
-  
+
   def test_initialize_missing_parameters
     exception = assert_raise( ArgumentError ) do
       DTAUS::Buchung.new(
@@ -70,7 +72,7 @@ class BuchungTest < Test::Unit::TestCase
     assert_equal "Missing params[:betrag] for new Buchung.", exception.message
 
   end
-  
+
   def test_initialize_incorrect_transaktionstyp
     exception = assert_raise( DTAUS::DTAUSException ) do
       DTAUS::Buchung.new(
@@ -95,7 +97,7 @@ class BuchungTest < Test::Unit::TestCase
     end
     assert_equal "Konto expected for Parameter 'kunden_konto', got Fixnum", exception.message
   end
-  
+
   def test_initialize_correct_betrag
     booking = DTAUS::Buchung.new(
       :kunden_konto => @konto,
@@ -140,7 +142,7 @@ class BuchungTest < Test::Unit::TestCase
     assert_equal 001, booking.betrag
 
   end
-  
+
   def test_initialize_incorrect_betrag
     exception = assert_raise( DTAUS::DTAUSException ) do
       DTAUS::Buchung.new(
@@ -164,9 +166,9 @@ class BuchungTest < Test::Unit::TestCase
   def test_initialize_incorrect_erweiterungen
     exception = assert_raise( DTAUS::IncorrectSizeException ) do
       konto = DTAUS::Konto.new(
-        :kontonummer => 1234567890, 
-        :blz => 12345678, 
-        :kontoinhaber => 'seeeeeeeehr laaaaaaaanger naaaaaame ' * 9, 
+        :kontonummer => 1234567890,
+        :blz => 12345678,
+        :kontoinhaber => 'seeeeeeeehr laaaaaaaanger naaaaaame ' * 9,
         :bankname =>'Bank Name'
       )
 

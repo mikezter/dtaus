@@ -9,14 +9,15 @@ module DTAUS
     #
     def self.convert_text(_text)
       tmp = _text.to_s.dup
-      tmp = tmp.upcase()
-      tmp.gsub!(/[Ää]/, 'AE')
-      tmp.gsub!(/[Öö]/, 'OE')
-      tmp.gsub!(/[Üü]/, 'UE')
-      tmp.gsub!(/ß/, 'SS')
-      tmp.gsub!(/[^\ \.\,\&\-\/\+\*\$\%]/, '')
 
-      tmp = tmp.strip
+      tmp.upcase!
+      tmp.gsub!(/[Ää]/u, 'AE')
+      tmp.gsub!(/[Öö]/u, 'OE')
+      tmp.gsub!(/[Üü]/u, 'UE')
+      tmp.gsub!(/ß/u, 'SS')
+      tmp.strip!
+
+      return tmp
     end
 
     # Konvertiert einen String in einen Integer
