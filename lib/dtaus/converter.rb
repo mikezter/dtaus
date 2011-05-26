@@ -1,22 +1,21 @@
 # encoding: utf-8
 
 module DTAUS
-  
+
   # Utility class for converting strings and numbers to DTA-conform representations
   class Converter
-    
+
     # Zeichen umsetzen gemäss DTA-Norm
     #
     def self.convert_text(_text)
       tmp = _text.to_s.dup
       tmp = tmp.upcase()
-      tmp = tmp.gsub('Ä', 'AE')
-      tmp = tmp.gsub('Ü', 'UE')
-      tmp = tmp.gsub('Ö', 'OE')
-      tmp = tmp.gsub('ä', 'AE')
-      tmp = tmp.gsub('ü', 'UE')
-      tmp = tmp.gsub('ö', 'OE')
-      tmp = tmp.gsub('ß', 'SS')
+      tmp.gsub!(/[Ää]/, 'AE')
+      tmp.gsub!(/[Öö]/, 'OE')
+      tmp.gsub!(/[Üü]/, 'UE')
+      tmp.gsub!(/ß/, 'SS')
+      tmp.gsub!(/[^\ \.\,\&\-\/\+\*\$\%]/, '')
+
       tmp = tmp.strip
     end
 
@@ -31,6 +30,6 @@ module DTAUS
         else raise DTAUSException.new("Cannot convert #{_number.class} to Integer")
       end
     end
-    
+
   end
 end
