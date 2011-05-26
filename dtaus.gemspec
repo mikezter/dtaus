@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = "dtaus"
-  s.version = "0.2.0"
+  s.version = "0.2.1"
   s.date = "2011-05-23"
   s.authors = %w(mikezter alphaone)
   s.email = %w(mikezter@gmail.com tmangner@alphaone.de)
