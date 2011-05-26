@@ -16,41 +16,58 @@ Usage
 Ablauf:
 
 * Erstelle ein Auftraggeber-Konto 
-* Erstelle ein DTAUS Objekt für diesen Auftraggeber
+* Erstelle ein Datensatz für diesen Auftraggeber
 * Erstelle ein oder mehrerere Kunden-Konten mit dazugehörigen Buchungen
-* Füge die Buchungen dem DTAUS Objekt hinzu
-* Schreibe eine DTAUS Datei
-* _Alternativ:_ Gebe die Daten als String aus
+* Füge die Buchungen dem Datensatz hinzu
+* Schreibe den Datensatz als DTAUS Datei
+* _Alternativ:_ Gib die Daten als String aus
 
 In Ruby:
  
-    auftraggeber = DTAUS::Konto.new(1234567890, 12345670, 'Muster GmbH', 'Deutsche Bank', true)
+``` ruby
+require 'dtaus'
 
-    dta = DTAUS.new(auftraggeber)
+# Konto des Auftraggebers
+konto_auftraggeber = DTAUS::Konto.new(
+  :kontonummer => 1234567890, 
+  :blz => 82070024, 
+  :kontoinhaber => 'inoxio Quality Services GmbH', 
+  :bankname =>'Deutsche Bank',
+  :is_auftraggeber => true
+)
 
-    kunde = DTAUS::Konto.new(1234567890, 12345670, 'Max Meier-Schulze', 'Sparkasse')
-    buchung = DTAUS::Buchung.new(auftraggeber, kunde, 39.99, 'Vielen Dank für ihren Einkauf vom 01.01.2010. Rechnungsnummer 12345')
+# LASTSCHRIFT
+# Erstellen eines Datensatzes für eine Lastschrift
+lastschrift = DTAUS::Datensatz.new(:lastschrift, konto_auftraggeber)
 
-    dta.add(buchung)
+# Konto des Kunden
+konto_kunde = DTAUS::Konto.new(
+  :kontonummer => 1234567890, 
+  :blz => 12030000, 
+  :kontoinhaber => 'Max Meier-Schulze', 
+  :bankname =>'Sparkasse',
+  :kundennummer => 77777777777
+)
+# Lastschrift-Buchung für den Kunden
+buchung = DTAUS::Buchung.new(
+  :kunden_konto => konto_kunde,
+  :betrag => "9,99",
+  :transaktionstyp => :lastschrift,
+  :verwendungszweck => "Vielen Dank für Ihren Einkauf!"
+)
+lastschrift.add(buchung)
 
-    dta.to_file
+lastschrift.to_file
+puts lastschrift
+```
 
-    puts dta
-
+Siehe: [example/example.rb](https://github.com/alphaone/dtaus/blob/master/example/example.rb)
  
 Einschränkungen:
 ----------------
 
-* Es sind nur Lastschriften möglich. __Typ der Datei ist LK__ (Lastschrift Kunde).
+* Es sind nur Lastschriften und Gutschriften möglich. __Typ der Datei ist LK oder GK__ (Lastschrift-Kunde oder Gutschrift-Kunde).
 * Auftraggeber, Empfänger und Verwendungszweck können jeweils 27 Zeichen enthalten. Es stehen 15 Erweiterungen à 27 Zeichen zur Verfügung. Jede Erweiterung kann entweder Auftraggeber, Empfänger oder Verwendungszweck erweitern.
-
-Todo:
-------
-
-* Gutschriften ermöglichen
-* Refactor to Module instead of Class with Subclasses
-* Parameter als Hash annehmen (vor allem für `Konto` und `Buchung`)
-* weiteres?
 
 Weitere Informationen
 ---------------------

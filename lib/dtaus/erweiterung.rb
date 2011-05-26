@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-class DTAUS
+module DTAUS
 
   # Eine Erweiterung eines C-Segments
   # Stellt eine Länge von 27 Zeichen sicher
@@ -16,35 +16,48 @@ class DTAUS
       :auftraggeber => TYPE_AUFTRAGGEBER
     }
 
-    class IncorrectErweiterungType; end;
     attr_reader :type, :text
 
-    # Erstellt ein Array von Erweiterungen aus einem beliebig langem String
+    # Erstellt eine Erweiterung
     #
-    def self.from_string(_typ, _text)
-      erweiterungen = []
-      _text = DTAUS.convert_text(_text)
-      if _text.size > 27
-        index = 27
-        while index < _text.size
-          erweiterungen << Erweiterung.new(_typ, _text[index..index += 26])
-        end
-      end
-      erweiterungen
-    end
-
-    # erweiterung = Erweiterung.new(:verwendungszweck, 'Rechnung Nr 12345')
-    # _type muss ein Symbol aus :kunde, :verwendungszweck, :auftraggeber sein.
+    # [<tt>_text</tt>] ist ein beliebig langer String
+    # [<tt>_type</tt>] muss ein Symbol sein, aus: 
+    #                  <tt>:kunde</tt>, <tt>:verwendungszweck</tt>, <tt>:auftraggeber</tt>
     #
     def initialize(_type, _text)
-      raise IncorrectErweiterungType.new unless TYPES.keys.include?(_type) or TYPES.values.include?(_type)
-      @text = DTAUS.convert_text(_text).ljust(27)
-      raise IncorrectSize.new("Text size may not exceed 27 Chars") if text.size > 27
+      unless TYPES.keys.include?(_type) or TYPES.values.include?(_type)
+        raise IncorrectErweiterungTypeException.new("Allowed types: :kunde, :verwendungszweck, :auftraggeber") 
+      end
+      @text = Converter.convert_text(_text).ljust(27)
+      if text.size > 27
+        raise IncorrectSizeException.new("Text size may not exceed 27 Chars") 
+      end
       @type = TYPES[_type] || _type
     end
 
-    def to_dta
-      "#{type}#{text}"
+    # Erstellt aus einem beliebig langem String eine Liste von Erweiterungen,
+    # wenn dies nötig wird.
+    # Es werden nur Erweiterungen für den Teil von <tt>_text</tt> erzeugt, der
+    # nicht in das Standardfeld von 27 Zeichen passt.
+    # Keine Erweiterungen werden erzeugt, wenn der <tt>_text</tt> vollständig
+    # in das Standardfeld von 27 Zeichen passt.
+    #
+    # [<tt>_text</tt>] ist ein beliebig langer String
+    # [<tt>_type</tt>] muss ein Symbol sein, aus: 
+    #                  <tt>:kunde</tt>, <tt>:verwendungszweck</tt>, <tt>:auftraggeber</tt>
+    #
+    # returns: Array of Erweiterung
+    def self.from_string(_type, _text)
+      erweiterungen = []
+      _text = Converter.convert_text(_text)
+      
+      # first slice will be omitted
+      _text.slice!(0..26) 
+      
+      while _text.size > 0
+        erweiterungen << Erweiterung.new(_type, _text.slice!(0..26))
+      end
+      erweiterungen
     end
 
   end
