@@ -125,7 +125,7 @@ class DatensatzTest < Test::Unit::TestCase
       "0000000               23052011                        10216C0000000012345"+
       "6781234567890000000000000005000 0000000000012345678987654321000000010000 "+
       "  KUNDE                              AUFTRAGGEBER               VIELEN DA"+
-      "NK FUER IHREN EINK1  0102AUF!                                            "+
+      "NK FUER IHREN EINK1  0102AUF                                             "+
       "                   0128E     00000010000000000000000000012345678900000000"+
       "00123456780000000010000                                                   ", dta.to_dta
 
@@ -143,7 +143,7 @@ class DatensatzTest < Test::Unit::TestCase
       "0000000               23052011                        10216C0000000012345"+
       "6781234567890000000000000051000 0000000000012345678987654321000000010000 "+
       "  KUNDE                              AUFTRAGGEBER               VIELEN DA"+
-      "NK FUER IHREN EINK1  0102AUF!                                            "+
+      "NK FUER IHREN EINK1  0102AUF                                             "+
       "                   0128E     00000010000000000000000000012345678900000000"+
       "00123456780000000010000                                                   ", dta.to_dta
   end
