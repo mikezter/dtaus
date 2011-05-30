@@ -8,16 +8,9 @@ module DTAUS
     # Zeichen umsetzen gemäss DTA-Norm
     #
     def self.convert_text(_text)
-      tmp = _text.to_s.dup
-
-      tmp.upcase!
-      tmp.gsub!(/[Ää]/u, 'AE')
-      tmp.gsub!(/[Öö]/u, 'OE')
-      tmp.gsub!(/[Üü]/u, 'UE')
-      tmp.gsub!(/ß/u, 'SS')
-      tmp.strip!
-
-      return tmp
+      _text.upcase!
+      replacement_map.each { |rule| _text.gsub!(rule[:pattern], rule[:replacement]) }
+      _text.strip
     end
 
     # Konvertiert einen String in einen Integer
@@ -30,6 +23,18 @@ module DTAUS
         when String then _number.strip.gsub(/\D/, '').to_i
         else raise DTAUSException.new("Cannot convert #{_number.class} to Integer")
       end
+    end
+  
+  private
+    
+    def self.replacement_map
+      [
+        { :pattern => /[Ää]/u,                        :replacement => 'AE' },
+        { :pattern => /[Öö]/u,                        :replacement => 'OE' },
+        { :pattern => /[Üü]/u,                        :replacement => 'UE' },
+        { :pattern => /[ß]/u,                         :replacement => 'SS' },
+        { :pattern => /[^A-Z0-9 \.\,\&\-\/\+\*\$\%]/, :replacement => '' },
+      ]
     end
 
   end

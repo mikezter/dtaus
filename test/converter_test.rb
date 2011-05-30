@@ -8,9 +8,13 @@ class ConverterTest < Test::Unit::TestCase
     assert_equal "ABC", DTAUS::Converter.convert_text("Abc")
     assert_equal "AEOEUESS", DTAUS::Converter.convert_text("äöüß")
     assert_equal "AEOEUE", DTAUS::Converter.convert_text("ÄÖÜ")
-    
-    # FAILS
-#    assert_equal "ÑØÇ", DTAUS::Converter.convert_text("Ñøç")
+  end
+
+  def test_convert_text_nicht_druckbare_zeichen
+    # nicht druckbare zeichen sollten entfernt werden
+    assert_equal "SREN HLBERG", DTAUS::Converter.convert_text("Søren Åhlberg")
+    assert_equal "DEIN 50%IGER ANTEIL AN DER MIO  -", DTAUS::Converter.convert_text("Dein 50%iger Anteil an der ½Mio ¥ ;-)")
+    assert_equal "MIETE/NEBENKOSTEN", DTAUS::Converter.convert_text("Miete/Nebenkosten")
   end
 
   def test_convert_number

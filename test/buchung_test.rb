@@ -23,7 +23,7 @@ class BuchungTest < Test::Unit::TestCase
     assert_equal @konto, buchung.kunden_konto
     assert_equal 10000, buchung.betrag
     assert_equal true, buchung.positiv?
-    assert_equal "VIELEN DANK FUER IHREN EINKAUF!", buchung.verwendungszweck
+    assert_equal "VIELEN DANK FUER IHREN EINKAUF", buchung.verwendungszweck
     assert_equal 1, buchung.erweiterungen.size
 
     buchung = DTAUS::Buchung.new(
@@ -35,7 +35,7 @@ class BuchungTest < Test::Unit::TestCase
     assert_equal @konto, buchung.kunden_konto
     assert_equal 10000, buchung.betrag
     assert_equal false, buchung.positiv?
-    assert_equal "VIELEN DANK FUER IHREN EINKAUF!", buchung.verwendungszweck
+    assert_equal "VIELEN DANK FUER IHREN EINKAUF", buchung.verwendungszweck
 
     konto = DTAUS::Konto.new(
       :kontonummer => 1234567890,
