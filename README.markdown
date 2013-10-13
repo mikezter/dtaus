@@ -78,3 +78,7 @@ Infos zu DTAUS: http://www.infodrom.org/projects/dtaus/dtaus.html
 DTAUS online check: http://www.xpecto.de/index.php?id=148,7
 
 Formatbeschreibung der Kreissparkasse Köln (pdf) https://www.ksk-koeln.de/formatbeschreibung_datentraegeraustausch.pdfx
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/mikezter/dtaus/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
